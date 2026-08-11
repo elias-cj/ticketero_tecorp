@@ -51,7 +51,7 @@ export function useDashboardAnalytics() {
       // --- Consulta 1: Tickets con solo las columnas ligeras necesarias ---
       // Sin límite: Supabase pagina automáticamente; usamos range para traer todos.
       let allTickets: any[] = [];
-      const PAGE_SIZE = 1000;
+      const PAGE_SIZE = 50000;
       let from = 0;
       let hasMore = true;
 

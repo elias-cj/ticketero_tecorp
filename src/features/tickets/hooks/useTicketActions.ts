@@ -162,22 +162,6 @@ export const useTicketActions = () => {
         throw new Error("No se encontraron los estados requeridos en la base de datos.");
       }
 
-      // 3. Generar la nomenclatura TCKIT-XXXXX con numeración propia y secuencial
-      const { data: lastItTicket } = await supabase
-        .from("tickets")
-        .select("numero_ticket")
-        .like("numero_ticket", "TCKIT-%")
-        .order("creado_en", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      let nextItNumber = 1;
-      if (lastItTicket?.numero_ticket) {
-        const lastNum = parseInt(lastItTicket.numero_ticket.replace("TCKIT-", ""), 10);
-        if (!isNaN(lastNum)) nextItNumber = lastNum + 1;
-      }
-      const newItNumber = `TCKIT-${String(nextItNumber).padStart(5, "0")}`;
-
       // 4. Actualizar el ticket original (se queda en Soporte como Cerrado)
       const { error: updateError } = await supabase
         .from("tickets")
@@ -191,11 +175,10 @@ export const useTicketActions = () => {
 
       if (updateError) throw updateError;
 
-      // 5. Insertar el ticket duplicado para IT
+      // 5. Insertar el ticket duplicado para IT (el trigger de BD asignará el número secuencial perfecto)
       const { error: insertError } = await supabase
         .from("tickets")
         .insert({
-          numero_ticket: newItNumber,
           titulo: ticket.titulo,
           descripcion: `[MOTIVO DE ESCALADO]: ${reason}\n\n[DESCRIPCIÓN ORIGINAL]: ${ticket.descripcion || "Sin descripción"}`,
           estado_id: escaladoStatusId,
@@ -207,7 +190,7 @@ export const useTicketActions = () => {
           puesto_trabajo: ticket.puesto_trabajo,
           modalidad_trabajo: ticket.modalidad_trabajo,
           ip_vpn: ticket.ip_vpn,
-          registro_estado: ticket.registro_estado,
+          registro_estado: "activo",
           escalados: true, // Pasa a la cola de IT
           creado_en: new Date().toISOString(),
           actualizado_en: new Date().toISOString(),

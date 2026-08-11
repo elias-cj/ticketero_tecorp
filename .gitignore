@@ -15,7 +15,7 @@ dist-ssr
 # Credenciales y datos de producción: nunca deben versionarse.
 .env
 .env.*
-!.env.example
+.env.example
 database_backup_prod/
 database_backup_prod/*
 database_backup_prod/**/*

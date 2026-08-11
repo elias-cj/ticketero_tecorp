@@ -133,6 +133,15 @@ const ProblemTypes = () => {
         prev.map(p => p.id === id ? { ...p, esta_activo: nextState } : p)
       );
       toast.success(`Tipo de problema ${nextState ? 'activado' : 'desactivado'}`);
+
+      const targetProb = problems.find(p => p.id === id);
+      const probName = targetProb?.nombre || "Tipo de problema";
+      await supabase.from('registros_auditoria').insert({
+        usuario_id: user?.id || null,
+        accion: 'UPDATE',
+        entidad: 'tipos_problema',
+        detalles: { message: `Tipo de problema '${probName}' ${nextState ? 'activado' : 'desactivado'}.` }
+      });
     } catch (error) {
       toast.error("Error al cambiar el estado");
       console.error(error);

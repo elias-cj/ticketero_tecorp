@@ -62,7 +62,7 @@ const TABLES = {
   soluciones: { module: 'Soluciones', columns: ['id', 'titulo', 'creado_en', 'esta_activo'] },
   inventario: { module: 'Inventario', columns: ['id', 'nombre', 'categoria_id', 'codigo_nasa', 'numero_serie', 'estado', 'ubicacion', 'usuario_asignado_id', 'creado_en', 'actualizado_en'] },
   licencias: { module: 'Licencias', columns: ['id', 'nombre', 'clave_licencia', 'fecha_expiracion', 'usuario_asignado_id', 'estado', 'notas', 'creado_en', 'actualizado_en'] },
-  informacion_empresa: { module: 'Configuración', columns: ['id', 'nombre', 'razon_social', 'nit', 'direccion', 'telefono', 'email', 'logo_url', 'creado_en', 'actualizado_en'] },
+  informacion_empresa: { module: 'Configuración', columns: ['id', 'nombre_comercial', 'razon_social', 'id_fiscal', 'direccion', 'telefono', 'email_contacto', 'logo_url', 'creado_en', 'actualizado_en'], publicRead: true },
   registros_auditoria: { module: 'Configuración', columns: ['id', 'usuario_id', 'accion', 'entidad', 'entidad_id', 'detalles', 'creado_en'] },
   logs_auditoria: { module: 'Configuración', columns: ['id', 'usuario_id', 'accion', 'entidad', 'detalles', 'creado_en'] },
   faqs: { module: 'Soluciones', columns: ['id', 'question', 'answer', 'category', 'order', 'creado_en', 'actualizado_en'] },
@@ -281,7 +281,10 @@ function parseQueryFilter(query, allowedColumns) {
       }
       assertColumn(key);
       const add = (operator, parsedValue) => {
-        values.push(parsedValue);
+        let val = parsedValue;
+        if (val === 'true') val = true;
+        if (val === 'false') val = false;
+        values.push(val);
         whereClauses.push(`"${key}" ${operator} $${values.length}`);
       };
       if (value.startsWith('eq.')) add('=', value.slice(3));
@@ -296,7 +299,8 @@ function parseQueryFilter(query, allowedColumns) {
         const entries = value.slice(3).replace(/^\(/, '').replace(/\)$/, '').split(',').map((entry) => entry.trim().replace(/^"|"$/g, '')).filter(Boolean);
         if (entries.length === 0 || entries.length > 100) throw new Error('Filtro IN inválido.');
         values.push(entries);
-        whereClauses.push(`"${key}" = ANY($${values.length})`);
+        const castType = (key.endsWith('_id') || key === 'id') ? '::uuid[]' : '::text[]';
+        whereClauses.push(`"${key}" = ANY($${values.length}${castType})`);
       } else if (value === 'is.null') whereClauses.push(`"${key}" IS NULL`);
       else if (value === 'is.not.null') whereClauses.push(`"${key}" IS NOT NULL`);
       else if (value === 'is.true') whereClauses.push(`"${key}" = TRUE`);
@@ -383,6 +387,15 @@ app.post('/rest/v1/rpc/cambiar_password_seguro', authenticateToken, async (req, 
     const password = await bcrypt.hash(parsed.data.p_new_password, 12);
     await dbQuery('UPDATE public.usuarios SET password = $1, debe_cambiar_password = FALSE, actualizado_en = NOW() WHERE id = $2', [password, req.user.id]);
     return res.json({ success: true, message: 'Contraseña actualizada.' });
+  } catch (error) {
+    return sendDatabaseError(res, error);
+  }
+});
+
+app.all('/rest/v1/rpc/obtener_metricas_dashboard', authenticateToken, async (_req, res) => {
+  try {
+    const { rows } = await dbQuery('SELECT public.obtener_metricas_dashboard() AS data');
+    return res.json(rows[0]?.data || {});
   } catch (error) {
     return sendDatabaseError(res, error);
   }
@@ -484,6 +497,61 @@ app.get('/rest/v1/:table', async (req, res, next) => {
       if (orderBy) sql += ` ORDER BY tp.${orderBy}`;
       if (limit !== null) sql += ` LIMIT ${limit}`;
       if (offset !== null) sql += ` OFFSET ${offset}`;
+    } else if (table === 'roles_usuario') {
+      const selectClause = `
+        ru.usuario_id, ru.rol_id, ru.asignado_por, ru.asignado_en,
+        CASE WHEN r.id IS NOT NULL THEN json_build_object('id', r.id, 'nombre', r.nombre) ELSE NULL END AS roles
+      `;
+      sql = `
+        SELECT ${selectClause}
+        FROM public.roles_usuario ru
+        LEFT JOIN public.roles r ON r.id = ru.rol_id
+      `;
+      const ruWhere = whereClauses.map((clause) => clause.replace(/^"([^"]+)"/, 'ru."$1"'));
+      if (ruWhere.length) sql += ` WHERE ${ruWhere.join(' AND ')}`;
+      if (orderBy) sql += ` ORDER BY ru.${orderBy}`;
+      if (limit !== null) sql += ` LIMIT ${limit}`;
+      if (offset !== null) sql += ` OFFSET ${offset}`;
+    } else if (table === 'permisos') {
+      const selectClause = `
+        p.id, p.modulo_id, p.accion_id,
+        CASE WHEN m.id IS NOT NULL THEN json_build_object('nombre', m.nombre) ELSE NULL END AS modulos,
+        CASE WHEN a.id IS NOT NULL THEN json_build_object('nombre', a.nombre) ELSE NULL END AS acciones
+      `;
+      sql = `
+        SELECT ${selectClause}
+        FROM public.permisos p
+        LEFT JOIN public.modulos m ON m.id = p.modulo_id
+        LEFT JOIN public.acciones a ON a.id = p.accion_id
+      `;
+      const pWhere = whereClauses.map((clause) => clause.replace(/^"([^"]+)"/, 'p."$1"'));
+      if (pWhere.length) sql += ` WHERE ${pWhere.join(' AND ')}`;
+      if (orderBy) sql += ` ORDER BY p.${orderBy}`;
+      if (limit !== null) sql += ` LIMIT ${limit}`;
+      if (offset !== null) sql += ` OFFSET ${offset}`;
+    } else if (table === 'tareas') {
+      const selectClause = `
+        tar.id, tar.titulo, tar.descripcion, tar.estado_id, tar.creado_en, tar.actualizado_en, tar.completado_en,
+        CASE WHEN et.id IS NOT NULL THEN json_build_object('id', et.id, 'nombre', et.nombre) ELSE NULL END AS estados_ticket,
+        COALESCE(
+          (
+            SELECT json_agg(json_build_object('tecnico_id', at.tecnico_id, 'asignado_en', at.asignado_en))
+            FROM public.asignados_tarea at
+            WHERE at.tarea_id = tar.id
+          ),
+          '[]'::json
+        ) AS asignados_tarea
+      `;
+      sql = `
+        SELECT ${selectClause}
+        FROM public.tareas tar
+        LEFT JOIN public.estados_ticket et ON et.id = tar.estado_id
+      `;
+      const tarWhere = whereClauses.map((clause) => clause.replace(/^"([^"]+)"/, 'tar."$1"'));
+      if (tarWhere.length) sql += ` WHERE ${tarWhere.join(' AND ')}`;
+      if (orderBy) sql += ` ORDER BY tar.${orderBy}`;
+      if (limit !== null) sql += ` LIMIT ${limit}`;
+      if (offset !== null) sql += ` OFFSET ${offset}`;
     } else {
       const selectColumns = config.columns.filter((column) => !(table === 'usuarios' && column === 'password')).map((column) => `"${column}"`).join(', ');
       sql = `SELECT ${selectColumns} FROM public."${table}"`;
@@ -523,6 +591,12 @@ app.post('/rest/v1/:table', authenticateToken, authorizeTable, async (req, res) 
     const insertedRows = [];
     for (const sourceRecord of records) {
       const record = { ...sourceRecord };
+      delete record.id;
+      delete record.creado_en;
+      delete record.actualizado_en;
+      delete record.asignado_en;
+      delete record.numero_ticket;
+      delete record.vector_busqueda;
       const keys = validateWriteBody(record, config.columns.filter((column) => !['id', 'creado_en', 'actualizado_en', 'asignado_en', 'numero_ticket', 'vector_busqueda'].includes(column)));
       if (table === 'usuarios' && Object.hasOwn(record, 'password')) record.password = await bcrypt.hash(PASSWORD_SCHEMA.parse(record.password), 12);
       const columns = keys.map((column) => `"${column}"`).join(', ');
@@ -543,6 +617,12 @@ app.patch('/rest/v1/:table', authenticateToken, authorizeTable, async (req, res)
   const config = req.tableConfig;
   try {
     const record = { ...req.body };
+    delete record.id;
+    delete record.creado_en;
+    delete record.actualizado_en;
+    delete record.asignado_en;
+    delete record.numero_ticket;
+    delete record.vector_busqueda;
     const allowedWriteColumns = config.columns.filter((column) => !['id', 'creado_en', 'actualizado_en', 'asignado_en', 'numero_ticket', 'vector_busqueda'].includes(column));
     const keys = validateWriteBody(record, allowedWriteColumns);
     const { whereClauses, values: filterValues } = parseQueryFilter(req.query, config.columns);
@@ -577,9 +657,220 @@ app.use((error, _req, res, _next) => {
   return res.status(500).json({ message: 'Error interno del servidor.' });
 });
 
+async function initAuxiliaryTables() {
+  try {
+    await dbQuery(`
+      CREATE TABLE IF NOT EXISTS public.informacion_empresa (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        nombre_comercial TEXT,
+        razon_social TEXT,
+        id_fiscal TEXT,
+        direccion TEXT,
+        telefono TEXT,
+        email_contacto TEXT,
+        logo_url TEXT,
+        creado_en TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        actualizado_en TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS public.registros_auditoria (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        usuario_id UUID REFERENCES public.usuarios(id) ON DELETE SET NULL,
+        accion TEXT NOT NULL,
+        entidad TEXT NOT NULL,
+        entidad_id UUID,
+        detalles JSONB,
+        creado_en TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS public.prioridades_ticket (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        nombre TEXT NOT NULL,
+        nivel INT DEFAULT 1
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_tickets_creado_en ON public.tickets (creado_en DESC);
+      CREATE INDEX IF NOT EXISTS idx_tickets_tecnico_asignado ON public.tickets (tecnico_asignado_id);
+      CREATE INDEX IF NOT EXISTS idx_tickets_centro_contacto ON public.tickets (centro_contacto_id);
+      CREATE INDEX IF NOT EXISTS idx_tickets_estado_id ON public.tickets (estado_id);
+      CREATE INDEX IF NOT EXISTS idx_tickets_tipo_problema_id ON public.tickets (tipo_problema_id);
+
+      CREATE OR REPLACE FUNCTION public.generar_numero_ticket_auto()
+      RETURNS trigger AS $$
+      DECLARE
+        v_max_num INT;
+        v_prefix TEXT;
+      BEGIN
+        IF NEW.numero_ticket IS NULL OR NEW.numero_ticket = '' THEN
+          v_prefix := CASE WHEN NEW.escalados IS TRUE THEN 'TCKIT-' ELSE 'TCK-' END;
+          
+          SELECT COALESCE(
+            MAX(
+              NULLIF(
+                regexp_replace(numero_ticket, '[^0-9]', '', 'g'), 
+                ''
+              )::INT
+            ), 
+            10000
+          )
+          INTO v_max_num
+          FROM public.tickets;
+
+          NEW.numero_ticket := v_prefix || lpad((v_max_num + 1)::text, 5, '0');
+        END IF;
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+
+      DROP TRIGGER IF EXISTS trg_generar_numero_ticket ON public.tickets;
+      CREATE TRIGGER trg_generar_numero_ticket
+      BEFORE INSERT ON public.tickets
+      FOR EACH ROW EXECUTE FUNCTION public.generar_numero_ticket_auto();
+    `);
+    
+    await dbQuery(`
+      INSERT INTO public.informacion_empresa (nombre_comercial, razon_social, id_fiscal, direccion, telefono, email_contacto)
+      SELECT 'TECORP S.A.', 'TECORP SOLUCIONES TECNOLÓGICAS S.A.', '1029384756', 'Av. Equipetrol Nro 100', '+591 3 3456789', 'soporte@tecorp.com'
+      WHERE NOT EXISTS (SELECT 1 FROM public.informacion_empresa);
+
+      INSERT INTO public.prioridades_ticket (nombre, nivel)
+      SELECT nombre, nivel FROM (VALUES ('Baja', 1), ('Media', 2), ('Alta', 3), ('Crítica', 4)) AS t(nombre, nivel)
+      WHERE NOT EXISTS (SELECT 1 FROM public.prioridades_ticket);
+
+      CREATE OR REPLACE FUNCTION public.obtener_metricas_dashboard()
+      RETURNS JSON
+      LANGUAGE plpgsql
+      SECURITY DEFINER
+      AS $$
+      DECLARE
+          v_total INT;
+          v_current_month INT;
+          v_last_month INT;
+          v_unassigned INT;
+          v_escalated INT;
+          v_pending_tasks INT;
+          v_by_country JSON;
+          v_by_work_mode JSON;
+          v_by_problem_type JSON;
+          v_tech_stats JSON;
+          v_result JSON;
+      BEGIN
+          SELECT COUNT(*) INTO v_total FROM public.tickets;
+
+          SELECT COUNT(*) INTO v_current_month 
+          FROM public.tickets 
+          WHERE creado_en >= date_trunc('month', CURRENT_DATE);
+
+          SELECT COUNT(*) INTO v_last_month 
+          FROM public.tickets 
+          WHERE creado_en >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month')
+            AND creado_en < date_trunc('month', CURRENT_DATE);
+
+          SELECT COUNT(*) INTO v_unassigned 
+          FROM public.tickets 
+          WHERE tecnico_asignado_id IS NULL;
+
+          SELECT COUNT(*) INTO v_escalated 
+          FROM public.tickets 
+          WHERE escalados = TRUE;
+
+          SELECT COUNT(*) INTO v_pending_tasks 
+          FROM public.tareas;
+
+          SELECT COALESCE(json_agg(t), '[]'::json) INTO v_by_country
+          FROM (
+              SELECT 
+                  COALESCE(cc.pais, 'Otros') AS pais,
+                  COALESCE(cc.nombre, 'Sin Centro') AS call_center,
+                  COUNT(t.id) AS cantidad
+              FROM public.tickets t
+              LEFT JOIN public.call_centers cc ON cc.id = t.centro_contacto_id
+              GROUP BY cc.pais, cc.nombre
+              ORDER BY cantidad DESC
+          ) t;
+
+          SELECT COALESCE(json_agg(t), '[]'::json) INTO v_by_work_mode
+          FROM (
+              SELECT 
+                  CASE 
+                      WHEN LOWER(COALESCE(modalidad_trabajo, '')) IN ('home-office', 'home office', 'remoto') THEN 'Home Office'
+                      WHEN LOWER(COALESCE(modalidad_trabajo, '')) IN ('presencial', 'oficina') THEN 'Presencial'
+                      ELSE 'Otros'
+                  END AS modalidad,
+                  COUNT(*) AS cantidad
+              FROM public.tickets
+              GROUP BY 1
+              ORDER BY cantidad DESC
+          ) t;
+
+          SELECT COALESCE(json_agg(t), '[]'::json) INTO v_by_problem_type
+          FROM (
+              SELECT 
+                  COALESCE(tp.nombre, 'General') AS tipo_problema,
+                  COUNT(t.id) AS cantidad
+              FROM public.tickets t
+              LEFT JOIN public.tipos_problema tp ON tp.id = t.tipo_problema_id
+              GROUP BY tp.nombre
+              ORDER BY cantidad DESC
+              LIMIT 10
+          ) t;
+
+          SELECT COALESCE(json_agg(t), '[]'::json) INTO v_tech_stats
+          FROM (
+              SELECT 
+                  u.nombre_completo AS tecnico,
+                  COUNT(t.id) AS total_asignados,
+                  COUNT(CASE WHEN et.nombre IN ('Resuelto', 'Cerrado') THEN 1 END) AS total_resueltos,
+                  COALESCE(
+                      ROUND(
+                          AVG(
+                              CASE 
+                                  WHEN t.fecha_cierre IS NOT NULL AND t.fecha_asignacion IS NOT NULL 
+                                       AND t.fecha_cierre >= t.fecha_asignacion
+                                  THEN EXTRACT(EPOCH FROM (t.fecha_cierre - t.fecha_asignacion)) / 60.0
+                                  ELSE NULL
+                              END
+                          )::numeric, 1
+                      ), 0
+                  ) AS tiempo_promedio_minutos
+              FROM public.usuarios u
+              JOIN public.roles_usuario ru ON ru.usuario_id = u.id
+              JOIN public.roles r ON r.id = ru.rol_id AND LOWER(r.nombre) LIKE '%soporte%'
+              LEFT JOIN public.tickets t ON t.tecnico_asignado_id = u.id
+              LEFT JOIN public.estados_ticket et ON et.id = t.estado_id
+              WHERE u.esta_activo = TRUE
+              GROUP BY u.id, u.nombre_completo
+              ORDER BY total_resueltos DESC, tiempo_promedio_minutos ASC
+          ) t;
+
+          v_result := json_build_object(
+              'total_processed', v_total,
+              'current_month_count', v_current_month,
+              'last_month_count', v_last_month,
+              'unassigned_count', v_unassigned,
+              'escalated_count', v_escalated,
+              'pending_tasks', v_pending_tasks,
+              'by_country', v_by_country,
+              'by_work_mode', v_by_work_mode,
+              'by_problem_type', v_by_problem_type,
+              'tech_stats', v_tech_stats,
+              'generated_at', NOW()
+          );
+
+          RETURN v_result;
+      END;
+      $$;
+    `);
+  } catch (err) {
+    console.error('Error al inicializar tablas auxiliares:', err.message);
+  }
+}
+
 const PORT = Number.parseInt(process.env.PORT || '54321', 10);
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, process.env.HOST || '127.0.0.1', () => console.log(`API segura disponible en el puerto ${PORT}.`));
+  initAuxiliaryTables().then(() => {
+    app.listen(PORT, process.env.HOST || '127.0.0.1', () => console.log(`API segura disponible en el puerto ${PORT}.`));
+  });
 }
 
 export { app, verifyToken, signToken, parseQueryFilter };

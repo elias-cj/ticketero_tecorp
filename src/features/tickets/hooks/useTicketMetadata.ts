@@ -76,14 +76,15 @@ export const useTicketMetadata = () => {
           const userRoles = rolesMap[u.id] || [];
 
           // REGLA 1: El técnico DEBE tener el rol correspondiente a la cola
-          const isITTech = userRoles.some(r => r === "it" || r.includes("it especializado") || r.includes("it") || r.includes("administrador de it"));
-          const isSoporteTech = userRoles.some(r => r.includes("soporte") || r.includes("técnico de soporte"));
+          const isITTech = userRoles.some(r => r.includes("it") || r.includes("especializado"));
+          const isSoporteTech = userRoles.some(r => r.includes("soporte") || r.includes("técnico") || r.includes("tecnico"));
+          const isUserAdmin = userRoles.some(r => r.includes("admin") || r.includes("supremo"));
 
           // Filtrado por pestaña activa
           if (queue === "it") {
-            if (!isITTech) return false;
+            if (!isITTech && !isUserAdmin && !isAdmin) return false;
           } else {
-            if (!isSoporteTech) return false;
+            if (!isSoporteTech && !isUserAdmin && !isAdmin) return false;
           }
 
           return true;

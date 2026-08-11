@@ -91,6 +91,15 @@ const CallCenters = () => {
     } else {
       toast.success(`Call Center ${nextStatus ? 'activado' : 'deshabilitado'}`);
       setAllCC(prev => prev.map(c => c.id === id ? { ...c, esta_activo: nextStatus } : c));
+      const targetCC = allCC.find(c => c.id === id);
+      const ccName = targetCC?.nombre || "Call Center";
+      const auth = JSON.parse(localStorage.getItem("auth") || "{}");
+      await supabase.from('registros_auditoria').insert({
+        usuario_id: auth?.userId || null,
+        accion: 'UPDATE',
+        entidad: 'call_centers',
+        detalles: { message: `Call Center '${ccName}' ${nextStatus ? 'activado' : 'deshabilitado'}.` }
+      });
     }
   };
 

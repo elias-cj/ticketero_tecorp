@@ -95,6 +95,16 @@ const Solutions = () => {
         prev.map(s => s.id === id ? { ...s, esta_activo: nextState } : s)
       );
       toast.success(`Solución ${nextState ? 'activada' : 'desactivada'}`);
+
+      const targetSol = solutions.find(s => s.id === id);
+      const solTitle = targetSol?.titulo || "Solución";
+      const auth = JSON.parse(localStorage.getItem("auth") || "{}");
+      await supabase.from('registros_auditoria').insert({
+        usuario_id: auth?.userId || null,
+        accion: 'UPDATE',
+        entidad: 'soluciones',
+        detalles: { message: `Solución '${solTitle}' ${nextState ? 'activada' : 'desactivada'}.` }
+      });
     } catch (error) {
       toast.error("Error al cambiar el estado");
       console.error(error);

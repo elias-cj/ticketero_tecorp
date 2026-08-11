@@ -157,8 +157,10 @@ export default function Configuration() {
 
     const permLookup: Record<string, string> = {};
     (permRows || []).forEach((p: any) => {
-      if (p.modulos && p.acciones) {
-        permLookup[p.id] = `${p.modulos.nombre}:${p.acciones.nombre}`;
+      const modObj = Array.isArray(p.modulos) ? p.modulos[0] : p.modulos;
+      const accObj = Array.isArray(p.acciones) ? p.acciones[0] : p.acciones;
+      if (modObj?.nombre && accObj?.nombre) {
+        permLookup[p.id] = `${modObj.nombre}:${accObj.nombre}`;
       }
     });
 
@@ -166,10 +168,12 @@ export default function Configuration() {
     (rpRows || []).forEach(rp => {
       if (!permsByRole[rp.rol_id]) permsByRole[rp.rol_id] = {};
       const pFullName = permLookup[rp.permiso_id];
-      if (pFullName) {
+      if (pFullName && pFullName.includes(':')) {
         const [mod, acc] = pFullName.split(':');
-        if (!permsByRole[rp.rol_id][mod]) permsByRole[rp.rol_id][mod] = [];
-        permsByRole[rp.rol_id][mod].push(acc);
+        if (mod && acc) {
+          if (!permsByRole[rp.rol_id][mod]) permsByRole[rp.rol_id][mod] = [];
+          permsByRole[rp.rol_id][mod].push(acc);
+        }
       }
     });
 
@@ -212,6 +216,9 @@ export default function Configuration() {
       toast.error("Error al actualizar el estado del usuario");
     } else {
       toast.success(`Usuario ${nextActive ? 'activado' : 'deshabilitado'} exitosamente`);
+      const targetUser = usuarios.find(u => u.id === userId);
+      const targetName = targetUser?.nombre_completo || "Usuario";
+      await logAuditAction("UPDATE", "usuarios", `Estado del usuario '${targetName}' cambiado a ${nextActive ? 'ACTIVO' : 'INACTIVO'}.`);
       queryClient.invalidateQueries();
       setUsuarios(prev => 
         prev
@@ -932,44 +939,60 @@ export default function Configuration() {
             <Card className="border border-border/60 shadow-md bg-card overflow-hidden rounded-2xl">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left align-middle border-collapse">
-                  <thead className="bg-muted/5 font-bold text-muted-foreground border-b border-border/60 text-xs uppercase tracking-wider">
+                  <thead className="bg-muted/10 font-bold text-muted-foreground border-b border-border/60 text-xs uppercase tracking-wider">
                     <tr>
                       <th className="px-6 py-4">Fecha y Hora</th>
-                      <th className="px-6 py-4">Directivo Asignado</th>
-                      <th className="px-6 py-4">Operación</th>
-                      <th className="px-6 py-4">Detalles</th>
+                      <th className="px-6 py-4">Realizado por</th>
+                      <th className="px-6 py-4 text-center">Operación</th>
+                      <th className="px-6 py-4">Módulo</th>
+                      <th className="px-6 py-4">Detalle de Modificación</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/60">
                     {auditLogs.map((log: any) => {
+                      const detailMsg = typeof log.detalles === 'object' 
+                        ? (log.detalles?.message || JSON.stringify(log.detalles)) 
+                        : log.detalles;
+                      const userObj = log.usuarios;
+                      const userName = userObj?.nombre_completo || "Administrador / Sistema";
+                      const userEmail = userObj?.email ? `(${userObj.email})` : "";
+
                       return (
                         <tr key={log.id} className="hover:bg-muted/20 transition-colors">
-                          <td className="px-6 py-4 whitespace-nowrap text-xs font-mono text-muted-foreground">
-                            {new Date(log.creado_en).toLocaleString()}
-                          </td>
-                          <td className="px-6 py-4 font-bold text-foreground">
-                            {log.usuarios ? log.usuarios.nombre_completo : "Sistema Interno"}
+                          <td className="px-6 py-4 whitespace-nowrap text-xs font-mono font-bold text-foreground/80">
+                            {new Date(log.creado_en).toLocaleString('es-ES', { 
+                              year: 'numeric', month: '2-digit', day: '2-digit', 
+                              hour: '2-digit', minute: '2-digit', second: '2-digit' 
+                            })}
                           </td>
                           <td className="px-6 py-4">
-                            <Badge variant="outline" className={`text-[10px] font-bold tracking-widest px-2.5 py-1 ${getActionColor(log.accion)}`}>
+                            <div className="flex flex-col">
+                              <span className="font-extrabold text-xs text-foreground">{userName}</span>
+                              {userEmail && <span className="text-[10px] text-muted-foreground font-mono">{userEmail}</span>}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <Badge variant="outline" className={`text-[10px] font-black tracking-widest uppercase px-2.5 py-1 ${getActionColor(log.accion)}`}>
                               {log.accion}
                             </Badge>
                           </td>
-                          <td className="px-6 py-4 text-xs font-medium text-muted-foreground max-w-md">
-                            <div className="flex items-center gap-2">
-                              <span className="bg-muted px-2 py-0.5 rounded text-[10px] uppercase font-bold">{log.entidad}</span>
-                              <span className="truncate">{typeof log.detalles === 'string' ? log.detalles : JSON.stringify(log.detalles)}</span>
-                            </div>
+                          <td className="px-6 py-4">
+                            <span className="bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-full text-[10px] uppercase font-black tracking-wider">
+                              {log.entidad}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-xs font-medium text-foreground/90 max-w-md">
+                            <span className="leading-relaxed">{detailMsg}</span>
                           </td>
                         </tr>
                       )
                     })}
                     {auditLogs.length === 0 && (
                       <tr>
-                        <td colSpan={4} className="py-16 text-center text-muted-foreground">
+                        <td colSpan={5} className="py-16 text-center text-muted-foreground">
                           <AlertCircle className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
-                          <p className="font-bold">El historial de auditoría está vacío.</p>
-                          <p className="text-xs">Las acciones administrativas como creación de roles o asignaciones se registrarán aquí.</p>
+                          <p className="font-bold text-sm">El historial de auditoría está disponible.</p>
+                          <p className="text-xs text-muted-foreground mt-1">Las modificaciones a usuarios, roles, empresa, soluciones, tipos de problema y call centers se registrarán aquí con hora y fecha exacta.</p>
                         </td>
                       </tr>
                     )}
