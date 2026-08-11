@@ -282,3 +282,26 @@ export interface Task {
   usuarios?: { nombre_completo: string };
   profiles?: { full_name: string }; // Alias de compatibilidad para evitar errores TS
 }
+
+export interface InventoryItem {
+  id: string;
+  name: string;
+  type: string;
+  nasa_code?: string;
+  serial_number?: string;
+  status: string;
+  location?: string;
+  assigned_to?: string;
+  created_at?: string;
+}
+
+export interface License {
+  id: string;
+  name: string;
+  key: string;
+  expiration_date?: string;
+  assigned_to?: string;
+  status: string;
+  notes?: string;
+  created_at?: string;
+}

@@ -39,8 +39,11 @@ import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 
+import { usePermissions } from "@/hooks/usePermissions";
+
 const Schedules = () => {
   const { user } = useAuth();
+  const { canView, canCreate, canEdit, canDelete } = usePermissions("Horarios");
   const today = new Date(2026, 3, 7); // As requested: April 7, 2026
   const [currentMonth, setCurrentMonth] = useState(today); 
   const [selectedDate, setSelectedDate] = useState<Date>(today);

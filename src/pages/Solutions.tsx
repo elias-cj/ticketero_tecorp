@@ -28,7 +28,10 @@ interface Solution {
   creado_en: string;
 }
 
+import { usePermissions } from "@/hooks/usePermissions";
+
 const Solutions = () => {
+  const { canView, canCreate, canEdit, canDelete } = usePermissions("Soluciones");
   const [solutions, setSolutions] = useState<Solution[]>([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -38,21 +41,12 @@ const Solutions = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const isAdmin = useMemo(() => {
-    try {
-      const auth = JSON.parse(localStorage.getItem("auth") || "{}");
-      return auth.role === "admin" || auth.role === "superadmin" || auth.role === "superadm" || auth.role === "administrador supremo" || auth.role === "technician" || auth.role === "it" || auth.role === "soporte";
-    } catch { return false; }
-  }, []);
-
-
   useEffect(() => {
-    if (!isAdmin) {
-
+    if (!canView) {
       toast.error("No tienes permisos para acceder a esta sección");
       navigate("/dashboard");
     }
-  }, [isAdmin, navigate]);
+  }, [canView, navigate]);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -222,39 +216,38 @@ const Solutions = () => {
           </p>
         </div>
         
-        <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2 font-black shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-95" onClick={() => setFormData({ name: "" })}>
-              <Plus className="h-4 w-4" />
-              NUEVA SOLUCIÓN
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] border-none shadow-2xl backdrop-blur-xl bg-card/95">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-black tracking-tighter italic uppercase flex items-center gap-2">
-                <Plus className="h-5 w-5 text-primary" />
-                Registrar Solución
-              </DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-6">
-              <div className="grid gap-2">
-                <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest opacity-60">Nombre de la Solución</Label>
-                <Input 
-                  id="name" 
-                  value={formData.name} 
-                  onChange={e => setFormData({ name: e.target.value })} 
-                  placeholder="Ej. Cambio de VLAN"
-                  className="font-bold border-border/40 focus:ring-primary/20 transition-all uppercase text-[12px]" 
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button onClick={handleAddNew} disabled={isSubmitting} className="w-full font-black tracking-widest uppercase">
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "GUARDAR EN CATÁLOGO"}
+        {canCreate && (
+          <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+            <DialogTrigger asChild>
+              <Button className="gap-2 font-bold shadow-md shadow-primary/10 rounded-xl" onClick={() => setFormData({ name: "" })}>
+                <Plus className="h-4 w-4" />
+                Nueva Solución
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Nueva Solución IT</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAddNew} className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Título / Solución Técnica</Label>
+                  <Input 
+                    id="name" 
+                    value={formData.name} 
+                    onChange={e => setFormData({ name: e.target.value })} 
+                    placeholder="Ej. Reiniciar servicio de spooler de impresión" 
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <DialogFooter className="pt-2">
+                  <Button type="submit" className="w-full font-bold" disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Guardar Solución"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       <Card className="border-none ring-1 ring-border shadow-2xl bg-card/30 backdrop-blur-md overflow-hidden rounded-2xl">
@@ -315,6 +308,7 @@ const Solutions = () => {
                         <div className="flex items-center justify-center gap-2">
                           <Switch
                             checked={s.esta_activo}
+                            disabled={!canEdit}
                             onCheckedChange={() => handleToggleActive(s.id, s.esta_activo)}
                           />
                           <span className={`text-xs font-semibold ${s.esta_activo ? "text-emerald-500" : "text-muted-foreground"}`}>
@@ -324,22 +318,27 @@ const Solutions = () => {
                       </TableCell>
                       <TableCell className="pr-6 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                            onClick={() => openEdit(s)}
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                            onClick={() => handleDelete(s.id, s.titulo)}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
+                          {canEdit && (
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                              onClick={() => openEdit(s)}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+
+                          {canDelete && (
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                              onClick={() => handleDelete(s.id, s.titulo)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>

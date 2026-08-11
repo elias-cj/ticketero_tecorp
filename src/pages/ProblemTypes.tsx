@@ -34,7 +34,12 @@ interface Category {
   nombre: string;
 }
 
+import { usePermissions } from "@/hooks/usePermissions";
+
 const ProblemTypes = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { canView, canCreate, canEdit, canDelete } = usePermissions("Tipos de Problema");
   const [problems, setProblems] = useState<ProblemType[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -43,39 +48,13 @@ const ProblemTypes = () => {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
 
-  const { user } = useAuth();
-
-  const isTechOrAdmin = useMemo(() => {
-    const role = (user?.role || '').toLowerCase();
-    const roleName = (user?.roleName || '').toLowerCase();
-    return role.includes('admin') || role.includes('soporte') || role.includes('super') || roleName.includes('admin') || roleName.includes('soporte') || roleName.includes('supremo');
-  }, [user]);
-
-  const canCreate = useMemo(() => {
-    if (isTechOrAdmin) return true;
-    const perms = user?.permissions?.['Tipos de Problema'] || [];
-    return perms.includes('CREAR');
-  }, [user, isTechOrAdmin]);
-
-  const canEdit = useMemo(() => {
-    if (isTechOrAdmin) return true;
-    const perms = user?.permissions?.['Tipos de Problema'] || [];
-    return perms.includes('EDITAR');
-  }, [user, isTechOrAdmin]);
-
-  const canDelete = useMemo(() => {
-    if (isTechOrAdmin) return true;
-    const perms = user?.permissions?.['Tipos de Problema'] || [];
-    return perms.includes('ELIMINAR');
-  }, [user, isTechOrAdmin]);
-
-  const canView = useMemo(() => {
-    if (isTechOrAdmin) return true;
-    const perms = user?.permissions?.['Tipos de Problema'] || [];
-    return perms.includes('VER');
-  }, [user, isTechOrAdmin]);
+  useEffect(() => {
+    if (!canView) {
+      toast.error("No tienes permisos para acceder a esta sección");
+      navigate("/dashboard");
+    }
+  }, [canView, navigate]);
 
   // Form State
   const [formData, setFormData] = useState({

@@ -512,6 +512,27 @@ app.get('/rest/v1/:table', async (req, res, next) => {
       if (orderBy) sql += ` ORDER BY ru.${orderBy}`;
       if (limit !== null) sql += ` LIMIT ${limit}`;
       if (offset !== null) sql += ` OFFSET ${offset}`;
+    } else if (table === 'permisos_rol') {
+      const selectClause = `
+        pr.rol_id, pr.permiso_id, pr.asignado_en,
+        CASE WHEN p.id IS NOT NULL THEN json_build_object(
+          'id', p.id,
+          'modulos', CASE WHEN m.id IS NOT NULL THEN json_build_object('nombre', m.nombre) ELSE NULL END,
+          'acciones', CASE WHEN a.id IS NOT NULL THEN json_build_object('nombre', a.nombre) ELSE NULL END
+        ) ELSE NULL END AS permisos
+      `;
+      sql = `
+        SELECT ${selectClause}
+        FROM public.permisos_rol pr
+        LEFT JOIN public.permisos p ON p.id = pr.permiso_id
+        LEFT JOIN public.modulos m ON m.id = p.modulo_id
+        LEFT JOIN public.acciones a ON a.id = p.accion_id
+      `;
+      const prWhere = whereClauses.map((clause) => clause.replace(/^"([^"]+)"/, 'pr."$1"'));
+      if (prWhere.length) sql += ` WHERE ${prWhere.join(' AND ')}`;
+      if (orderBy) sql += ` ORDER BY pr.${orderBy}`;
+      if (limit !== null) sql += ` LIMIT ${limit}`;
+      if (offset !== null) sql += ` OFFSET ${offset}`;
     } else if (table === 'permisos') {
       const selectClause = `
         p.id, p.modulo_id, p.accion_id,
@@ -563,11 +584,11 @@ app.get('/rest/v1/:table', async (req, res, next) => {
     const { rows } = await dbQuery(sql, values);
     if (String(req.headers.prefer || '').includes('count=exact')) {
       const countWhere = table === 'tickets' ? whereClauses.map((clause) => clause.replace(/^"([^"]+)"/, 't."$1"')) : table === 'tipos_problema' ? whereClauses.map((clause) => clause.replace(/^"([^"]+)"/, 'tp."$1"')) : whereClauses;
-      const countSql = table === 'tickets' 
+      const countSql = table === 'tickets'
         ? `SELECT COUNT(*) AS total FROM public.tickets t${countWhere.length ? ` WHERE ${countWhere.join(' AND ')}` : ''}`
         : table === 'tipos_problema'
-        ? `SELECT COUNT(*) AS total FROM public.tipos_problema tp${countWhere.length ? ` WHERE ${countWhere.join(' AND ')}` : ''}`
-        : `SELECT COUNT(*) AS total FROM public."${table}"${countWhere.length ? ` WHERE ${countWhere.join(' AND ')}` : ''}`;
+          ? `SELECT COUNT(*) AS total FROM public.tipos_problema tp${countWhere.length ? ` WHERE ${countWhere.join(' AND ')}` : ''}`
+          : `SELECT COUNT(*) AS total FROM public."${table}"${countWhere.length ? ` WHERE ${countWhere.join(' AND ')}` : ''}`;
       const countResult = await dbQuery(countSql, values);
       const total = countResult.rows[0]?.total || 0;
       res.setHeader('Content-Range', `0-${Math.max(Number(total) - 1, 0)}/${total}`);
@@ -689,6 +710,37 @@ async function initAuxiliaryTables() {
         nivel INT DEFAULT 1
       );
 
+      CREATE TABLE IF NOT EXISTS public.inventario (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        codigo TEXT,
+        nombre TEXT NOT NULL,
+        categoria TEXT,
+        numero_serie TEXT,
+        estado TEXT DEFAULT 'Disponible',
+        asignado_a UUID REFERENCES public.usuarios(id) ON DELETE SET NULL,
+        centro_contacto_id UUID REFERENCES public.call_centers(id) ON DELETE SET NULL,
+        ubicacion TEXT,
+        fecha_adquisicion DATE,
+        notas TEXT,
+        creado_en TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        actualizado_en TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS public.licencias (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        nombre TEXT NOT NULL,
+        proveedor TEXT,
+        clave_licencia TEXT,
+        cantidad_total INT DEFAULT 1,
+        cantidad_usada INT DEFAULT 0,
+        fecha_compra DATE,
+        fecha_vencimiento DATE,
+        estado TEXT DEFAULT 'Activa',
+        notas TEXT,
+        creado_en TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        actualizado_en TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+
       CREATE INDEX IF NOT EXISTS idx_tickets_creado_en ON public.tickets (creado_en DESC);
       CREATE INDEX IF NOT EXISTS idx_tickets_tecnico_asignado ON public.tickets (tecnico_asignado_id);
       CREATE INDEX IF NOT EXISTS idx_tickets_centro_contacto ON public.tickets (centro_contacto_id);
@@ -727,7 +779,7 @@ async function initAuxiliaryTables() {
       BEFORE INSERT ON public.tickets
       FOR EACH ROW EXECUTE FUNCTION public.generar_numero_ticket_auto();
     `);
-    
+
     await dbQuery(`
       INSERT INTO public.informacion_empresa (nombre_comercial, razon_social, id_fiscal, direccion, telefono, email_contacto)
       SELECT 'TECORP S.A.', 'TECORP SOLUCIONES TECNOLÓGICAS S.A.', '1029384756', 'Av. Equipetrol Nro 100', '+591 3 3456789', 'soporte@tecorp.com'
@@ -736,6 +788,37 @@ async function initAuxiliaryTables() {
       INSERT INTO public.prioridades_ticket (nombre, nivel)
       SELECT nombre, nivel FROM (VALUES ('Baja', 1), ('Media', 2), ('Alta', 3), ('Crítica', 4)) AS t(nombre, nivel)
       WHERE NOT EXISTS (SELECT 1 FROM public.prioridades_ticket);
+
+      CREATE OR REPLACE FUNCTION public.sembrar_matriz_rbac_inicial()
+      RETURNS void AS $$
+      BEGIN
+        INSERT INTO public.acciones (nombre) VALUES ('VER'), ('CREAR'), ('EDITAR'), ('ELIMINAR'), ('LLAMAR')
+        ON CONFLICT (nombre) DO NOTHING;
+
+        INSERT INTO public.modulos (nombre) VALUES 
+          ('Call Centers'), ('Cola IT'), ('Configuración'), ('Dashboard'), ('Exportación'), 
+          ('Horarios'), ('Inventario'), ('Licencias'), ('Roles'), ('Soluciones'), 
+          ('Tareas'), ('Tickets'), ('Usuarios'), ('Tipos de Problema')
+        ON CONFLICT (nombre) DO NOTHING;
+
+        INSERT INTO public.permisos (modulo_id, accion_id)
+        SELECT m.id, a.id 
+        FROM public.modulos m
+        CROSS JOIN public.acciones a
+        ON CONFLICT (modulo_id, accion_id) DO NOTHING;
+
+        INSERT INTO public.roles (nombre, descripcion) VALUES
+          ('Administrador Supremo', 'Control total sobre todo el sistema'),
+          ('BI', 'Rol orientado a inteligencia de negocios y análisis'),
+          ('it', 'Técnico de Infraestructura y Redes'),
+          ('Técnico de Soporte', 'Gestión operativa de tickets y soporte técnico'),
+          ('Usuario Autorizado', 'Rol con permisos limitados de consulta'),
+          ('semiadm', 'Rol administrativo parcial')
+        ON CONFLICT (nombre) DO NOTHING;
+      END;
+      $$ LANGUAGE plpgsql;
+
+      SELECT public.sembrar_matriz_rbac_inicial();
 
       CREATE OR REPLACE FUNCTION public.obtener_metricas_dashboard()
       RETURNS JSON

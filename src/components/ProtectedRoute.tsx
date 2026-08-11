@@ -13,8 +13,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles
   const { isAuthenticated, user, isLoading } = useAuth();
   const location = useLocation();
 
-  const userRole = (user?.role || "soporte").toLowerCase();
-  const isSuperAdmin = ["superadmin", "super", "superadm", "administrador supremo"].includes(userRole);
+  const userRole = (user?.role || "").toLowerCase();
+  const roleName = (user?.roleName || "").toLowerCase();
+  
+  // SOLAMENTE el Administrador Supremo (Superadmin raíz) tiene bypass total de permisos
+  const isSuperAdmin = userRole === "superadmin" || userRole === "superadm" || roleName === "administrador supremo" || roleName === "supremo";
 
   // Fallback check for localStorage to prevent "login bounce"
   const hasSavedAuth = localStorage.getItem('auth') !== null;
@@ -45,10 +48,35 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles
   if (isSuperAdmin) return <>{children}</>;
 
   if (requiredPermission && user) {
-    const hasPerm = user.permissions?.[requiredPermission.module]?.includes(requiredPermission.action);
+    const hasPerm = Boolean(user.permissions?.[requiredPermission.module]?.includes(requiredPermission.action));
+
     if (!hasPerm) {
-      console.warn(`Acceso denegado: falta permiso ${requiredPermission.action} en ${requiredPermission.module}`);
-      return <Navigate to="/dashboard" replace />;
+      console.warn(`Acceso denegado: el rol '${user.roleName || user.role}' no tiene permiso ${requiredPermission.action} en '${requiredPermission.module}'`);
+      
+      // Buscar dinámicamente el primer módulo al que este rol SÍ tenga acceso 'VER'
+      const userPerms = user.permissions || {};
+      const firstAllowedModule = Object.keys(userPerms).find(mod => userPerms[mod]?.includes("VER"));
+
+      const moduleRoutes: Record<string, string> = {
+        "Dashboard": "/dashboard",
+        "Tickets": "/tickets",
+        "Tareas": "/tareas",
+        "Horarios": "/horarios",
+        "Call Centers": "/call-centers",
+        "Soluciones": "/soluciones",
+        "Tipos de Problema": "/tipos-problema",
+        "Inventario": "/inventario",
+        "Licencias": "/licencias",
+        "Exportación": "/exportar",
+        "Configuración": "/configuracion",
+        "Usuarios": "/soporte-tecnico"
+      };
+
+      const redirectPath = (firstAllowedModule && moduleRoutes[firstAllowedModule]) ? moduleRoutes[firstAllowedModule] : "/exportar";
+      if (location.pathname === redirectPath) {
+        return <>{children}</>;
+      }
+      return <Navigate to={redirectPath} replace />;
     }
   }
 

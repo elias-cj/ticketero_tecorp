@@ -40,7 +40,10 @@ const emptyForm = {
   assigned_to: ""
 };
 
+import { usePermissions } from "@/hooks/usePermissions";
+
 const Inventory = () => {
+  const { canView, canCreate, canEdit, canDelete } = usePermissions("Inventario");
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");

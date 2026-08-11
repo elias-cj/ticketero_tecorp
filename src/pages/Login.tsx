@@ -30,7 +30,6 @@ const Login = () => {
     setIsLoading(true);
     setError("");
 
-    // ── Autenticación segura: validación de contraseña en servidor (sin exponer hash) ──
     const { data: rpcResult, error: rpcError } = await supabase
       .rpc('login_seguro', { p_email: email, p_password: password });
 
@@ -42,11 +41,8 @@ const Login = () => {
 
     const profile = { ...rpcResult.user, token: rpcResult.token, roles: rpcResult.roles || rpcResult.user?.roles || [], permissions: rpcResult.permissions || {} };
 
-    // Verificar si la cuenta de usuario está activa
-    // Verificar si debe cambiar contraseña (estilo Active Directory)
     if (profile.debe_cambiar_password) {
       setIsLoading(false);
-      // Guardar email Y userId en sessionStorage para la pantalla de cambio
       sessionStorage.setItem('pending_password_change_email', email);
       sessionStorage.setItem('pending_password_change_id', profile.id);
       sessionStorage.setItem('pending_password_change_token', profile.token);
@@ -84,7 +80,6 @@ const Login = () => {
       }, roles[0].id);
       navigate(roleKey === "bi" ? "/exportar" : "/dashboard");
     } else {
-      // Múltiples roles: mostrar selector
       setPendingProfile(profile);
       setAvailableRoles(roles);
       setStep("role-select");
@@ -178,12 +173,6 @@ const Login = () => {
               <div className="mt-6 text-center">
                 <Link to="/" className="text-sm text-muted-foreground hover:text-primary">← Volver al inicio</Link>
               </div>
-
-              {/*<div className="mt-8 p-4 bg-muted rounded-lg text-xs text-muted-foreground">
-                <p className="font-semibold mb-1">Acceso Demo:</p>
-                <p>Usuario: <span className="text-foreground font-medium">juan.perez@tecorp.com</span></p>
-                <p>Contraseña: <span className="text-foreground font-medium">cualquier valor</span></p>
-              </div>*/}
             </motion.div>
           )}
 
@@ -244,17 +233,13 @@ const Login = () => {
   );
 };
 
-// Mapea nombre del rol de BD al código de rol interno
 function mapRoleName(name: string): string {
   const n = name.toLowerCase().trim();
-  if (n.includes("supremo") || n.includes("super")) return "superadmin";
-  if (n.includes("admin")) return "admin";
-  if (n.includes("it") || n.includes("especializado")) return "it";
-  if (n.includes("bi")) return "bi";
-  if (n.includes("autorizado")) return "usuario autorizado";
-  if (n.includes("agente")) return "agente";
+  if (n === "administrador supremo" || n === "superadmin" || n === "superadm" || n === "supremo") return "superadmin";
+  if (n === "administrador" || n === "admin") return "admin";
+  if (n === "it" || n === "it especializado") return "it";
+  if (n === "bi") return "bi";
   return n;
 }
-
 
 export default Login;

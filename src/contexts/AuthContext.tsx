@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthState } from '@/types';
-
 import { supabase } from '@/lib/supabase';
 
 interface AuthContextType extends AuthState {
@@ -21,7 +20,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const fetchUserPermissions = async (userId: string, activeRoleId?: string): Promise<Record<string, string[]>> => {
     try {
-      // 1. Get role IDs for the user
       let roleIds: string[] = [];
 
       if (activeRoleId) {
@@ -36,7 +34,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roleIds = urData.map(r => r.rol_id);
       }
 
-      // 2. Get permissions from normalized RBAC tables
       const { data: rpData, error: rpError } = await supabase
         .from('permisos_rol')
         .select(`
@@ -48,13 +45,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .in('rol_id', roleIds);
 
       if (rpError) throw rpError;
-      if (!rpData) return {};
 
-      // 3. Merge into Record<module, action[]> — mismo formato que antes
       const merged: Record<string, string[]> = {};
-      (rpData as any[]).forEach(rp => {
-        const moduleName: string = rp.permisos?.modulos?.nombre;
-        const actionName: string = rp.permisos?.acciones?.nombre;
+      (rpData || []).forEach((rp: any) => {
+        const p = rp.permisos || rp;
+        const moduleName: string = p?.modulos?.nombre || p?.modulo;
+        const actionName: string = p?.acciones?.nombre || p?.accion;
         if (!moduleName || !actionName) return;
         if (!merged[moduleName]) merged[moduleName] = [];
         if (!merged[moduleName].includes(actionName)) {
@@ -86,8 +82,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           return;
         }
 
-        // 1. Check if user is still active in DB (The "Kick out" mechanism)
-        // Usamos un bloque try-catch interno para que fallos de red no cierren la sesión
         try {
           const { data: dbUser, error: dbError } = await supabase
             .from('usuarios')
@@ -101,11 +95,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             return;
           }
         } catch (dbQueryError) {
-          console.error("Error al verificar estado del usuario (posible fallo de red):", dbQueryError);
-          // No cerramos sesión, permitimos que la app funcione con los datos locales (Offline-first approach)
+          console.error("Error al verificar estado del usuario:", dbQueryError);
         }
 
-        // 2. Refresh permissions from DB
         const activeRoleId = userData.activeRoleId;
         let permissions = userData.permissions || {};
         
@@ -116,7 +108,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           }
         } catch (permsError) {
           console.error("Error al refrescar permisos:", permsError);
-          // Mantenemos los permisos que ya teníamos guardados
         }
         
         userData = { ...userData, id: userId, permissions, activeRoleId };
@@ -129,7 +120,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         });
       } catch (error) {
         console.error('Error crítico al inicializar la autenticación:', error);
-        // Solo borramos la sesión si hay un error de parseo (datos corruptos)
         if (error instanceof SyntaxError) {
           localStorage.removeItem('auth');
         }
@@ -152,9 +142,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const userId = userData.id || userData.userId || '';
       const activeRoleId = roleId || userData.activeRoleId;
-      // La respuesta de inicio de sesión ya contiene permisos calculados por el
-      // servidor. El fallback mantiene compatibilidad con sesiones anteriores.
-      const permissions = userData.permissions || await fetchUserPermissions(userId, activeRoleId);
+      
+      // Guardar temporalmente en localStorage para que el interceptor HTTP adjunte el token JWT en fetchUserPermissions
+      const tempUser = { ...userData, id: userId, activeRoleId };
+      localStorage.setItem('auth', JSON.stringify(tempUser));
+
+      const permissions = await fetchUserPermissions(userId, activeRoleId);
       const fullUser = { ...userData, id: userId, permissions, activeRoleId };
       
       localStorage.setItem('auth', JSON.stringify(fullUser));
@@ -164,7 +157,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isLoading: false,
       });
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error("Error durante el inicio de sesión:", error);
       setState(prev => ({ ...prev, isLoading: false }));
     }
   };

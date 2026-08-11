@@ -739,6 +739,12 @@ export default function Configuration() {
                       <tbody className="divide-y divide-border/60">
                         {roles.map(r => {
                           const userCount = getRoleUserCount(r.id);
+                          const rolePermMap = rolePermissions[r.id] || permsByRole[r.id] || {};
+                          let permCount = 0;
+                          Object.values(rolePermMap).forEach((accs: any) => {
+                            permCount += Array.isArray(accs) ? accs.length : 0;
+                          });
+
                           const isSuperadminRole = r.name.toLowerCase() === 'superadmin' || r.name.toLowerCase() === 'superadm';
                           
                           return (
@@ -755,9 +761,14 @@ export default function Configuration() {
                                 {r.description || "Sin descripción"}
                               </td>
                               <td className="px-6 py-4">
-                                <span className="text-[10px] font-bold text-primary tracking-wider bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-md uppercase">
-                                  {userCount} ASIGNADOS
-                                </span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] font-bold text-primary tracking-wider bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-md uppercase">
+                                    {permCount} PERMISOS
+                                  </span>
+                                  <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                                    {userCount} usuarios
+                                  </span>
+                                </div>
                               </td>
                               <td className="px-6 py-4 text-right">
                                 <div className="flex items-center justify-end gap-3 opacity-50 group-hover:opacity-100 transition-opacity">

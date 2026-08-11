@@ -32,15 +32,20 @@ const AppSidebar = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const userRole = (user?.role || "soporte").toLowerCase();
+  const userRole = (user?.role || "").toLowerCase();
+  const roleName = (user?.roleName || "").toLowerCase();
   const permissions = user?.permissions || {};
   
-  // Superadmin always has access
-  const isSuperAdmin = ["superadmin", "super", "superadm", "administrador supremo"].includes(userRole);
+  // SOLAMENTE el Administrador Supremo (Superadmin raíz) tiene bypass total de permisos
+  const isSuperAdmin = userRole === "superadmin" || userRole === "superadm" || roleName === "administrador supremo" || roleName === "supremo";
 
   const hasPermission = (moduleName: string, action: string = "VER") => {
+    // Si es Administrador Supremo raíz, tiene acceso total
     if (isSuperAdmin) return true;
-    return permissions[moduleName]?.includes(action);
+    
+    // Para TODOS los demás roles (admin, IT, BI, Técnico de Soporte, etc.):
+    // Se respetan estrictamente los permisos asignados en la base de datos
+    return Boolean(permissions[moduleName]?.includes(action));
   };
 
   const filteredItems = useMemo(() => {
@@ -48,7 +53,7 @@ const AppSidebar = () => {
       if (!item.module) return true;
       return hasPermission(item.module, "VER");
     });
-  }, [permissions, isSuperAdmin]);
+  }, [permissions, isSuperAdmin, userRole, roleName]);
 
   const handleLogout = () => {
     logout();

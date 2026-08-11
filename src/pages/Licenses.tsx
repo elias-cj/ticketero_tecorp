@@ -39,7 +39,10 @@ const emptyForm = {
   notes: ""
 };
 
+import { usePermissions } from "@/hooks/usePermissions";
+
 const Licenses = () => {
+  const { canView, canCreate, canEdit, canDelete } = usePermissions("Licencias");
   const [licenses, setLicenses] = useState<License[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");

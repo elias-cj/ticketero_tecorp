@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePermissions } from "@/hooks/usePermissions";
 import { useSystem } from "@/contexts/SystemContext";
 import { TICKET_STATUSES } from "@/lib/constants";
 import { type Task } from "@/types";
@@ -352,16 +353,7 @@ const Tasks = () => {
     };
   }, []);
 
-  const currentUser = useMemo(() => {
-    return {
-      role: user?.role || "soporte",
-      name: user?.name || "Usuario"
-    };
-  }, [user]);
-
-  const isAdmin = currentUser.role === "admin" || currentUser.role === "superadmin" || currentUser.role === "superadm";
-  const isIT    = currentUser.role === "it";
-  const canEdit = isAdmin || isIT;
+  const { canCreate, canEdit, canDelete } = usePermissions("Tareas");
 
   const filteredTasks = useMemo(() => {
     const base = tasks.filter(t => {
@@ -562,7 +554,7 @@ const Tasks = () => {
           <p className="text-muted-foreground text-sm">Asignación y seguimiento de labores técnicas preventivas.</p>
         </div>
         
-        {canEdit && (
+        {canCreate && (
           <Button onClick={() => setShowCreate(!showCreate)} className="gap-2 shadow-sm">
             <Plus className="h-4 w-4" />
             {showCreate ? "Cancelar" : "Asignar Tarea"}

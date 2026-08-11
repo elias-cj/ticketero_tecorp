@@ -22,8 +22,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { type CallCenter } from "@/types";
+import { usePermissions } from "@/hooks/usePermissions";
 
 const CallCenters = () => {
+  const { canView, canCreate, canEdit, canDelete } = usePermissions("Call Centers");
   const [allCC, setAllCC] = useState<CallCenter[]>([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -33,22 +35,12 @@ const CallCenters = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Role check
-  const isAdmin = useMemo(() => {
-    try {
-      const auth = JSON.parse(localStorage.getItem("auth") || "{}");
-      return auth.role === "admin" || auth.role === "superadmin" || auth.role === "superadm" || auth.role === "it" || auth.role === "soporte" || auth.role === "administrador supremo";
-    } catch { return false; }
-  }, []);
-
-
-
   useEffect(() => {
-    if (!isAdmin) {
+    if (!canView) {
       toast.error("No tienes permisos para acceder a esta sección");
       navigate("/dashboard");
     }
-  }, [isAdmin, navigate]);
+  }, [canView, navigate]);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -262,6 +254,7 @@ const CallCenters = () => {
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={cc.esta_activo}
+                          disabled={!canEdit}
                           onCheckedChange={() => handleToggleActive(cc.id, cc.esta_activo)}
                         />
                         <span className={`text-xs font-semibold ${cc.esta_activo ? "text-emerald-500" : "text-muted-foreground"}`}>
@@ -280,24 +273,30 @@ const CallCenters = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                          onClick={() => openEdit(cc)}
-                          title="Editar"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                          onClick={() => handleDelete(cc.id)}
-                          title="Eliminar"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+
+                        {canEdit && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                            onClick={() => openEdit(cc)}
+                            title="Editar"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        )}
+
+                        {canDelete && (
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                            onClick={() => handleDelete(cc.id)}
+                            title="Eliminar"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
