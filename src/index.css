@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 95%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 224 76% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 220 14% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 224 76% 48%;
+
+    --radius: 0.5rem;
+
+    /* Status colors */
+    --status-open: 224 76% 48%;
+    --status-in-progress: 38 92% 50%;
+    --status-escalated: 0 72% 51%;
+    --status-resolved: 152 69% 38%;
+    --status-closed: 220 9% 46%;
+    --status-sla: 0 72% 51%;
+
+    /* Sidebar - solid blue */
+    --sidebar-background: 224 76% 48%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 224 76% 48%;
+    --sidebar-accent: 224 76% 55%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 224 76% 55%;
+    --sidebar-ring: 0 0% 100%;
+    --sidebar-muted: 224 76% 42%;
+
+    /* Alert banner */
+    --alert-banner: 0 72% 51%;
+    --alert-banner-foreground: 0 0% 100%;
+
+    /* Chart colors */
+    --chart-1: 224 76% 48%;
+    --chart-2: 152 69% 38%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 0 72% 51%;
+    --chart-5: 220 9% 46%;
+  }
+
+  .dark {
+    --background: 222 30% 8%;
+    --foreground: 210 20% 92%;
+
+    --card: 222 25% 12%;
+    --card-foreground: 210 20% 92%;
+
+    --popover: 222 25% 12%;
+    --popover-foreground: 210 20% 92%;
+
+    --primary: 224 76% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 20% 18%;
+    --secondary-foreground: 210 20% 88%;
+
+    --muted: 220 18% 16%;
+    --muted-foreground: 215 15% 55%;
+
+    --accent: 220 20% 18%;
+    --accent-foreground: 210 20% 92%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 18% 20%;
+    --input: 220 18% 20%;
+    --ring: 224 76% 55%;
+
+    --status-open: 224 76% 55%;
+    --status-in-progress: 38 92% 55%;
+    --status-escalated: 0 62% 55%;
+    --status-resolved: 152 69% 45%;
+    --status-closed: 215 15% 55%;
+    --status-sla: 0 62% 55%;
+
+    --sidebar-background: 222 30% 6%;
+    --sidebar-foreground: 210 20% 85%;
+    --sidebar-primary: 224 76% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 25% 14%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 220 20% 15%;
+    --sidebar-ring: 224 76% 55%;
+    --sidebar-muted: 222 25% 10%;
+
+    --alert-banner: 0 62% 45%;
+    --alert-banner-foreground: 0 0% 100%;
+
+    --chart-1: 224 76% 55%;
+    --chart-2: 152 69% 45%;
+    --chart-3: 38 92% 55%;
+    --chart-4: 0 62% 55%;
+    --chart-5: 215 15% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+}
+
+@layer components {
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider;
+  }
+  .status-open {
+    @apply bg-primary/10 text-primary;
+  }
+  .status-in-progress {
+    background-color: hsl(var(--status-in-progress) / 0.1);
+    color: hsl(var(--status-in-progress));
+  }
+  .status-escalated {
+    background-color: hsl(var(--status-escalated) / 0.08);
+    color: hsl(var(--status-escalated));
+  }
+  .status-resolved {
+    background-color: hsl(var(--status-resolved) / 0.1);
+    color: hsl(var(--status-resolved));
+  }
+  .status-closed {
+    background-color: hsl(var(--status-closed) / 0.1);
+    color: hsl(var(--status-closed));
+  }
+  .status-sla {
+    background-color: hsl(var(--status-sla) / 0.08);
+    color: hsl(var(--status-sla));
+  }
+
+  .metric-card {
+    @apply bg-card border rounded-xl p-5 hover:shadow-md transition-shadow;
+  }
+
+  .alert-banner {
+    background-color: hsl(var(--alert-banner));
+    color: hsl(var(--alert-banner-foreground));
+  }
+}
+
+@layer utilities {
+  .sidebar-active {
+    background-color: hsl(var(--sidebar-accent));
+  }
+}
