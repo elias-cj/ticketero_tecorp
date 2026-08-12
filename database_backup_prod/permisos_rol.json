@@ -1,0 +1,1517 @@
+[
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "2e0f775c-7a3e-4535-b574-7b508a30985c",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "d75e168a-25ec-415d-bc2d-502a027d35cf",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "24fb1d46-d0ce-4723-ac27-88fa7ada07a2",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "898afb6c-e01a-469b-ae4f-ae953ddc614e",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "c5005625-44ff-4d67-9f0e-1b19ed79bfd7",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "de554cf7-2add-4cfe-9603-8f83caa3d546",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "c1f15975-8076-4224-9009-c3f298f1d8c6",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "c3444631-b40c-478e-9722-6b705e4ef676",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "cb5281b6-271c-4c0d-8c14-5ceb6a814f03",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "0cfa1a94-bd8c-426f-bf77-5f50fa406357",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "fa6c9aa7-2239-4333-b082-0ed6ec184c45",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "fe2b9b55-8bd0-47e8-a984-6526dd4d8a6a",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "a1b98a6d-0833-4a10-a7f6-e6ac2479f2d5",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "97281277-6b45-4025-989c-7c9e193b24cb",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "0a628aee-90ec-4485-b808-da6283282cae",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "23439b5c-5cd4-401a-955c-35a87188b8d2",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "506bac9f-8c56-41b5-bc27-6d0b7ff4a132",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "316d06af-3f63-48e3-bc9b-2bea273f36d3",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "0ca81d2f-954c-4ec0-98b2-c5c10ea479ed",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "dfe2054d-50e1-4758-85ed-540ad6153881",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "0931f3d7-1345-4a21-8013-62b6b9e6ee58",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "b4a20aae-acd9-4adc-858d-d4aa0eb02bb1",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "bee052a8-bb36-4e65-a047-a68e44fdf1bc",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "d619b687-7684-408c-beff-33a008b7bbc0",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "05d38fe9-0e62-4cc3-a6f8-e5601696c1d5",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "25364bf8-8782-4306-825e-da44475d8e8d",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "1b0e01ba-c1e6-4b7a-ae90-61c2922c4d0a",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "6c3f1df8-5f2b-4df9-8db1-5867bd21d47a",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "7b7cc576-73a2-4e0a-a983-6cb4f811b7f3",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "38b2210e-eb24-44bc-831d-abd642470d39",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "ff237201-b814-43d8-ba8a-8e92b13eff5b",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "a084d7c2-8932-4c4c-aa79-2118c329401a",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "b4a23ae8-735d-4b6c-97fa-d4abb2f3a910",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "ca07bd6f-2c66-44a9-ac6c-ba8c07bbf80a",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "598feb7c-b43f-4797-a3f6-a0ade5c19a25",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "737451df-d37d-4ba9-8ee8-48c4fca93698",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "2df2736d-859c-4818-8e81-c8ab6cac0af5",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "8bc7bfa6-c4fe-40a3-8a3f-8a90d89e53f5",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "cb7bbc96-2ef0-45f6-b26a-81ffecfb1f06",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "176570cb-c61a-4efd-8da3-75bf144a4efb",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "fb0d03b6-2270-42c6-a675-b5c349e25144",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "65cf42f4-0814-4ae2-a2b2-ba4ae6a35268",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "6b3efacf-4c2e-46ab-b0f8-c350f41cda8b",
+    "permiso_id": "6c3f1df8-5f2b-4df9-8db1-5867bd21d47a",
+    "asignado_en": "2026-04-24T02:51:24.032747+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "da62ae26-f655-43c0-bf58-46e518ff931a",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "839fbe8b-e505-4869-96f8-57cfedb2312a",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "07dad3d0-4be4-4e5c-b3c4-b7d06512dab6",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "80c7376d-901c-4510-80a5-26d2c9738b18",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "83095dad-1390-4050-8f40-dcf20772fb61",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "922de2f3-32ea-4cb1-81bc-cf8f57870856",
+    "asignado_en": "2026-04-22T04:59:45.814102+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "6c3f1df8-5f2b-4df9-8db1-5867bd21d47a",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "7dc4dff7-fbbc-4a75-9087-bd2515a807df",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "d7e1af86-6749-4eff-9ab6-6afe7c88925a",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "a8ab29ca-a0e7-40d9-ac6d-403f53eb1dbb",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "a303c842-67af-4dd9-ba15-f7dc14a9ac28",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "3c35e16f-a44b-4bf6-871a-5ed4c5fe862a",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "2e62c0f0-95bf-4943-b01b-20619a80cb9d",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "399701ed-246f-4f7b-a56d-18ad6df9423d",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "351e8b2f-09a8-4f8d-bd68-18eb8ffba769",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "54e55170-a342-4168-b7d4-068ddf367497",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "62d75598-d037-4bba-ac93-72bc84dbbaa2",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "1bc3efd8-7c75-4f93-9751-e5c1af118516",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "dbc2eadf-ca5b-467d-9cf2-32778441a86d",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "27a02f26-d551-4686-a5b6-5187d8f36264",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "33cbc7f7-3b6b-44aa-b3e3-e598e1ff92eb",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "06735b26-0fb1-4c65-941b-bfb33c89a65b",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "0862993b-df20-414f-8901-3fc0ff54a399",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "e6571c55-e6c8-4a36-94aa-953314e19c68",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "c1f15975-8076-4224-9009-c3f298f1d8c6",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "6e868762-df26-49e6-a62d-7e84c794f8d0",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "7b7cc576-73a2-4e0a-a983-6cb4f811b7f3",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "80c7376d-901c-4510-80a5-26d2c9738b18",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "da62ae26-f655-43c0-bf58-46e518ff931a",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "7afbb9a1-a783-412e-88bf-79204f290409",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "b8084861-bf9e-41c3-8a60-76965865ac47",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "ae9e5f83-fc95-4643-accb-972f50870c81",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "ba41a3e7-98b6-4d1d-99c3-9c37b88c79be",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "65cf42f4-0814-4ae2-a2b2-ba4ae6a35268",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "38b2210e-eb24-44bc-831d-abd642470d39",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "83095dad-1390-4050-8f40-dcf20772fb61",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "be0dc450-0206-48c5-9396-e3814d2912ac",
+    "permiso_id": "839fbe8b-e505-4869-96f8-57cfedb2312a",
+    "asignado_en": "2026-07-24T03:14:58.166989+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "83095dad-1390-4050-8f40-dcf20772fb61",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "839fbe8b-e505-4869-96f8-57cfedb2312a",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "c1f15975-8076-4224-9009-c3f298f1d8c6",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "898afb6c-e01a-469b-ae4f-ae953ddc614e",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "a1b98a6d-0833-4a10-a7f6-e6ac2479f2d5",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "fe2b9b55-8bd0-47e8-a984-6526dd4d8a6a",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "0017250f-b7f7-4062-8deb-98075fed7c18",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "a0fe3a5b-a45d-4b88-ac44-626a84522288",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "8bc7bfa6-c4fe-40a3-8a3f-8a90d89e53f5",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "6c3f1df8-5f2b-4df9-8db1-5867bd21d47a",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "ca07bd6f-2c66-44a9-ac6c-ba8c07bbf80a",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "183c6947-ceca-4b6d-b0a3-c4846d978d5f",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "f3af907f-7be9-4f70-ac52-b9de9f6da36e",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "de554cf7-2add-4cfe-9603-8f83caa3d546",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "24fb1d46-d0ce-4723-ac27-88fa7ada07a2",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "97281277-6b45-4025-989c-7c9e193b24cb",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "fa6c9aa7-2239-4333-b082-0ed6ec184c45",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "ba7a908e-ac1c-4dad-89f2-97d8d0863ecd",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "91d8ef8c-d7fe-46d1-835b-c9315da61d68",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "cb7bbc96-2ef0-45f6-b26a-81ffecfb1f06",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "0862993b-df20-414f-8901-3fc0ff54a399",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "598feb7c-b43f-4797-a3f6-a0ade5c19a25",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "5ec6a90d-289e-4380-a265-c86a8e2f9be6",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "94ad8f16-30d2-4e92-a1c5-5685cf6d2074",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "c5005625-44ff-4d67-9f0e-1b19ed79bfd7",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "d75e168a-25ec-415d-bc2d-502a027d35cf",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "a084d7c2-8932-4c4c-aa79-2118c329401a",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "0cfa1a94-bd8c-426f-bf77-5f50fa406357",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "c65f45b8-a705-4fe8-8df1-7c68ebb70ea7",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "203a5326-fc5e-487b-b80e-2129188b9254",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "176570cb-c61a-4efd-8da3-75bf144a4efb",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "06735b26-0fb1-4c65-941b-bfb33c89a65b",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "737451df-d37d-4ba9-8ee8-48c4fca93698",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "84f517c7-af5f-4b84-a2f5-a151430324c0",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "29d2d5cd-1fe8-419c-96db-0f2792a6ab0e",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "c3444631-b40c-478e-9722-6b705e4ef676",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "e6571c55-e6c8-4a36-94aa-953314e19c68",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "7dc4dff7-fbbc-4a75-9087-bd2515a807df",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "351e8b2f-09a8-4f8d-bd68-18eb8ffba769",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "d7e1af86-6749-4eff-9ab6-6afe7c88925a",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "a8ab29ca-a0e7-40d9-ac6d-403f53eb1dbb",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "a303c842-67af-4dd9-ba15-f7dc14a9ac28",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "3c35e16f-a44b-4bf6-871a-5ed4c5fe862a",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "54e55170-a342-4168-b7d4-068ddf367497",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "1bc3efd8-7c75-4f93-9751-e5c1af118516",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "399701ed-246f-4f7b-a56d-18ad6df9423d",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "2e62c0f0-95bf-4943-b01b-20619a80cb9d",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "62d75598-d037-4bba-ac93-72bc84dbbaa2",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "27a02f26-d551-4686-a5b6-5187d8f36264",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "dbc2eadf-ca5b-467d-9cf2-32778441a86d",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "33cbc7f7-3b6b-44aa-b3e3-e598e1ff92eb",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "c1f15975-8076-4224-9009-c3f298f1d8c6",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "de554cf7-2add-4cfe-9603-8f83caa3d546",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "c5005625-44ff-4d67-9f0e-1b19ed79bfd7",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "c3444631-b40c-478e-9722-6b705e4ef676",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "ca07bd6f-2c66-44a9-ac6c-ba8c07bbf80a",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "598feb7c-b43f-4797-a3f6-a0ade5c19a25",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "737451df-d37d-4ba9-8ee8-48c4fca93698",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "2df2736d-859c-4818-8e81-c8ab6cac0af5",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "b4a20aae-acd9-4adc-858d-d4aa0eb02bb1",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "65cf42f4-0814-4ae2-a2b2-ba4ae6a35268",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "38b2210e-eb24-44bc-831d-abd642470d39",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "83095dad-1390-4050-8f40-dcf20772fb61",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "839fbe8b-e505-4869-96f8-57cfedb2312a",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "7afbb9a1-a783-412e-88bf-79204f290409",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "b8084861-bf9e-41c3-8a60-76965865ac47",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "ae9e5f83-fc95-4643-accb-972f50870c81",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "ba41a3e7-98b6-4d1d-99c3-9c37b88c79be",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "6e868762-df26-49e6-a62d-7e84c794f8d0",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "7b7cc576-73a2-4e0a-a983-6cb4f811b7f3",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "80c7376d-901c-4510-80a5-26d2c9738b18",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "83095dad-1390-4050-8f40-dcf20772fb61",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "65cf42f4-0814-4ae2-a2b2-ba4ae6a35268",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "1b0e01ba-c1e6-4b7a-ae90-61c2922c4d0a",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "6c3f1df8-5f2b-4df9-8db1-5867bd21d47a",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "ff237201-b814-43d8-ba8a-8e92b13eff5b",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "07dad3d0-4be4-4e5c-b3c4-b7d06512dab6",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "922de2f3-32ea-4cb1-81bc-cf8f57870856",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "7dc4dff7-fbbc-4a75-9087-bd2515a807df",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "d7e1af86-6749-4eff-9ab6-6afe7c88925a",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "a8ab29ca-a0e7-40d9-ac6d-403f53eb1dbb",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "a303c842-67af-4dd9-ba15-f7dc14a9ac28",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "3c35e16f-a44b-4bf6-871a-5ed4c5fe862a",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "2e62c0f0-95bf-4943-b01b-20619a80cb9d",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "351e8b2f-09a8-4f8d-bd68-18eb8ffba769",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "399701ed-246f-4f7b-a56d-18ad6df9423d",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "54e55170-a342-4168-b7d4-068ddf367497",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "62d75598-d037-4bba-ac93-72bc84dbbaa2",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "1bc3efd8-7c75-4f93-9751-e5c1af118516",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "dbc2eadf-ca5b-467d-9cf2-32778441a86d",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "27a02f26-d551-4686-a5b6-5187d8f36264",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "33cbc7f7-3b6b-44aa-b3e3-e598e1ff92eb",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "0862993b-df20-414f-8901-3fc0ff54a399",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "06735b26-0fb1-4c65-941b-bfb33c89a65b",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "e6571c55-e6c8-4a36-94aa-953314e19c68",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "7afbb9a1-a783-412e-88bf-79204f290409",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "b8084861-bf9e-41c3-8a60-76965865ac47",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "ae9e5f83-fc95-4643-accb-972f50870c81",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "ba41a3e7-98b6-4d1d-99c3-9c37b88c79be",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "1adabdcd-7733-45ba-b48f-34b279c40e3b",
+    "permiso_id": "da62ae26-f655-43c0-bf58-46e518ff931a",
+    "asignado_en": "2026-07-24T03:19:28.852393+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "33cbc7f7-3b6b-44aa-b3e3-e598e1ff92eb",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "0862993b-df20-414f-8901-3fc0ff54a399",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "06735b26-0fb1-4c65-941b-bfb33c89a65b",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "e6571c55-e6c8-4a36-94aa-953314e19c68",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "6c3f1df8-5f2b-4df9-8db1-5867bd21d47a",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "d7e1af86-6749-4eff-9ab6-6afe7c88925a",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "a8ab29ca-a0e7-40d9-ac6d-403f53eb1dbb",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "a303c842-67af-4dd9-ba15-f7dc14a9ac28",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "2e62c0f0-95bf-4943-b01b-20619a80cb9d",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "3c35e16f-a44b-4bf6-871a-5ed4c5fe862a",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "7dc4dff7-fbbc-4a75-9087-bd2515a807df",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "351e8b2f-09a8-4f8d-bd68-18eb8ffba769",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "399701ed-246f-4f7b-a56d-18ad6df9423d",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "54e55170-a342-4168-b7d4-068ddf367497",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "62d75598-d037-4bba-ac93-72bc84dbbaa2",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "1bc3efd8-7c75-4f93-9751-e5c1af118516",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "dbc2eadf-ca5b-467d-9cf2-32778441a86d",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "27a02f26-d551-4686-a5b6-5187d8f36264",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "7afbb9a1-a783-412e-88bf-79204f290409",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "b8084861-bf9e-41c3-8a60-76965865ac47",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "ae9e5f83-fc95-4643-accb-972f50870c81",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "ba41a3e7-98b6-4d1d-99c3-9c37b88c79be",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "bee052a8-bb36-4e65-a047-a68e44fdf1bc",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "4812068d-f16b-4d8a-9955-1548a56a901a",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "84f517c7-af5f-4b84-a2f5-a151430324c0",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "5ec6a90d-289e-4380-a265-c86a8e2f9be6",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "183c6947-ceca-4b6d-b0a3-c4846d978d5f",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "0a628aee-90ec-4485-b808-da6283282cae",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "c5005625-44ff-4d67-9f0e-1b19ed79bfd7",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "de554cf7-2add-4cfe-9603-8f83caa3d546",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "c1f15975-8076-4224-9009-c3f298f1d8c6",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "c3444631-b40c-478e-9722-6b705e4ef676",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "23439b5c-5cd4-401a-955c-35a87188b8d2",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "d75e168a-25ec-415d-bc2d-502a027d35cf",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "24fb1d46-d0ce-4723-ac27-88fa7ada07a2",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "898afb6c-e01a-469b-ae4f-ae953ddc614e",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "2e0f775c-7a3e-4535-b574-7b508a30985c",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "506bac9f-8c56-41b5-bc27-6d0b7ff4a132",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "b4a23ae8-735d-4b6c-97fa-d4abb2f3a910",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "a084d7c2-8932-4c4c-aa79-2118c329401a",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "97281277-6b45-4025-989c-7c9e193b24cb",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "a1b98a6d-0833-4a10-a7f6-e6ac2479f2d5",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "316d06af-3f63-48e3-bc9b-2bea273f36d3",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "cb5281b6-271c-4c0d-8c14-5ceb6a814f03",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "0cfa1a94-bd8c-426f-bf77-5f50fa406357",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "fa6c9aa7-2239-4333-b082-0ed6ec184c45",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "fe2b9b55-8bd0-47e8-a984-6526dd4d8a6a",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "0ca81d2f-954c-4ec0-98b2-c5c10ea479ed",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "c65f45b8-a705-4fe8-8df1-7c68ebb70ea7",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "ba7a908e-ac1c-4dad-89f2-97d8d0863ecd",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "56896faa-5c57-4948-a4c1-c24d69cbb7e9",
+    "permiso_id": "6e868762-df26-49e6-a62d-7e84c794f8d0",
+    "asignado_en": "2026-04-07T04:40:42.505989+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "0017250f-b7f7-4062-8deb-98075fed7c18",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "77d6cbba-ed19-48d8-89cb-f1581a552717",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "dfe2054d-50e1-4758-85ed-540ad6153881",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "2e0f775c-7a3e-4535-b574-7b508a30985c",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "b4a23ae8-735d-4b6c-97fa-d4abb2f3a910",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "cb5281b6-271c-4c0d-8c14-5ceb6a814f03",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "77d6cbba-ed19-48d8-89cb-f1581a552717",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "a92a0a70-c1f1-4dfc-b875-0c7fff624066",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "fb0d03b6-2270-42c6-a675-b5c349e25144",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "a92a0a70-c1f1-4dfc-b875-0c7fff624066",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "2df2736d-859c-4818-8e81-c8ab6cac0af5",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "4812068d-f16b-4d8a-9955-1548a56a901a",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "faf20da0-8826-4140-9bbf-029f59a88082",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "6e868762-df26-49e6-a62d-7e84c794f8d0",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "65cf42f4-0814-4ae2-a2b2-ba4ae6a35268",
+    "asignado_en": "2026-04-21T04:41:47.799922+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "203a5326-fc5e-487b-b80e-2129188b9254",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "91d8ef8c-d7fe-46d1-835b-c9315da61d68",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "a0fe3a5b-a45d-4b88-ac44-626a84522288",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "0931f3d7-1345-4a21-8013-62b6b9e6ee58",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "fb0d03b6-2270-42c6-a675-b5c349e25144",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "176570cb-c61a-4efd-8da3-75bf144a4efb",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "c3444631-b40c-478e-9722-6b705e4ef676",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "c5005625-44ff-4d67-9f0e-1b19ed79bfd7",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "de554cf7-2add-4cfe-9603-8f83caa3d546",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "c1f15975-8076-4224-9009-c3f298f1d8c6",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "737451df-d37d-4ba9-8ee8-48c4fca93698",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "598feb7c-b43f-4797-a3f6-a0ade5c19a25",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "ca07bd6f-2c66-44a9-ac6c-ba8c07bbf80a",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "2df2736d-859c-4818-8e81-c8ab6cac0af5",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "6e868762-df26-49e6-a62d-7e84c794f8d0",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "7b7cc576-73a2-4e0a-a983-6cb4f811b7f3",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "80c7376d-901c-4510-80a5-26d2c9738b18",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "da62ae26-f655-43c0-bf58-46e518ff931a",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "65cf42f4-0814-4ae2-a2b2-ba4ae6a35268",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "b9f7b271-2915-4e81-bc7c-c483adf8ddb1",
+    "permiso_id": "38b2210e-eb24-44bc-831d-abd642470d39",
+    "asignado_en": "2026-07-24T03:22:06.2497+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "7dc4dff7-fbbc-4a75-9087-bd2515a807df",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "351e8b2f-09a8-4f8d-bd68-18eb8ffba769",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "54e55170-a342-4168-b7d4-068ddf367497",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "1bc3efd8-7c75-4f93-9751-e5c1af118516",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "27a02f26-d551-4686-a5b6-5187d8f36264",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "0862993b-df20-414f-8901-3fc0ff54a399",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "d7e1af86-6749-4eff-9ab6-6afe7c88925a",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "3c35e16f-a44b-4bf6-871a-5ed4c5fe862a",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "399701ed-246f-4f7b-a56d-18ad6df9423d",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "62d75598-d037-4bba-ac93-72bc84dbbaa2",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "dbc2eadf-ca5b-467d-9cf2-32778441a86d",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "33cbc7f7-3b6b-44aa-b3e3-e598e1ff92eb",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "06735b26-0fb1-4c65-941b-bfb33c89a65b",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "e6571c55-e6c8-4a36-94aa-953314e19c68",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "a8ab29ca-a0e7-40d9-ac6d-403f53eb1dbb",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "a303c842-67af-4dd9-ba15-f7dc14a9ac28",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "ee817663-3220-4c29-88bf-3c2557856dae",
+    "permiso_id": "2e62c0f0-95bf-4943-b01b-20619a80cb9d",
+    "asignado_en": "2026-04-22T05:02:20.504137+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "cb7bbc96-2ef0-45f6-b26a-81ffecfb1f06",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "8bc7bfa6-c4fe-40a3-8a3f-8a90d89e53f5",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "29d2d5cd-1fe8-419c-96db-0f2792a6ab0e",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "94ad8f16-30d2-4e92-a1c5-5685cf6d2074",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "f3af907f-7be9-4f70-ac52-b9de9f6da36e",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "d619b687-7684-408c-beff-33a008b7bbc0",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "faf20da0-8826-4140-9bbf-029f59a88082",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "2df2736d-859c-4818-8e81-c8ab6cac0af5",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "737451df-d37d-4ba9-8ee8-48c4fca93698",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "598feb7c-b43f-4797-a3f6-a0ade5c19a25",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "ca07bd6f-2c66-44a9-ac6c-ba8c07bbf80a",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "b4a20aae-acd9-4adc-858d-d4aa0eb02bb1",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "05d38fe9-0e62-4cc3-a6f8-e5601696c1d5",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "7b7cc576-73a2-4e0a-a983-6cb4f811b7f3",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "da62ae26-f655-43c0-bf58-46e518ff931a",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "80c7376d-901c-4510-80a5-26d2c9738b18",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "6e868762-df26-49e6-a62d-7e84c794f8d0",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "25364bf8-8782-4306-825e-da44475d8e8d",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "38b2210e-eb24-44bc-831d-abd642470d39",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  },
+  {
+    "rol_id": "72f72583-1dcb-4dad-ad2e-356dc442aa12",
+    "permiso_id": "839fbe8b-e505-4869-96f8-57cfedb2312a",
+    "asignado_en": "2026-07-15T21:29:18.263152+00:00"
+  }
+]
