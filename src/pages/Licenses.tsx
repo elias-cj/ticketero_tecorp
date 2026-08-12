@@ -60,7 +60,7 @@ const Licenses = () => {
         .from("licencias")
         .select("*")
         .neq('estado', 'revocada')
-        .order("fecha_expiracion", { ascending: true });
+        .order("fecha_vencimiento", { ascending: true });
 
       if (error) throw error;
       
@@ -69,8 +69,8 @@ const Licenses = () => {
         id: item.id,
         name: item.nombre,
         key: item.clave_licencia,
-        expiration_date: item.fecha_expiracion,
-        assigned_to: item.usuario_asignado_id,
+        expiration_date: item.fecha_vencimiento,
+        assigned_to: item.proveedor || "",
         status: item.estado,
         notes: item.notas
       }));
@@ -170,8 +170,8 @@ const Licenses = () => {
       const payload = {
         nombre: formData.name,
         clave_licencia: formData.key,
-        fecha_expiracion: formData.expiration_date || null,
-        // usuario_asignado_id: formData.assigned_to,
+        fecha_vencimiento: formData.expiration_date || null,
+        proveedor: formData.assigned_to,
         estado: formData.status,
         notas: formData.notes
       };

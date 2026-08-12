@@ -70,12 +70,12 @@ const Inventory = () => {
       const mappedData: InventoryItem[] = (data || []).map(item => ({
         id: item.id,
         name: item.nombre,
-        type: item.categoria_id || "Laptop", // Or join with categories if needed
-        nasa_code: item.codigo_nasa,
+        type: item.categoria || "Laptop",
+        nasa_code: item.codigo,
         serial_number: item.numero_serie,
         status: item.estado,
         location: item.ubicacion,
-        assigned_to: item.usuario_asignado_id
+        assigned_to: item.asignado_a
       }));
 
       setItems(mappedData);
@@ -176,12 +176,12 @@ const Inventory = () => {
     try {
       const payload = {
         nombre: formData.name,
-        // categoria_id: formData.type, // Map type to category UUID if available
-        codigo_nasa: formData.nasa_code,
+        categoria: formData.type,
+        codigo: formData.nasa_code,
         numero_serie: formData.serial_number,
         estado: formData.status,
         ubicacion: formData.location,
-        // usuario_asignado_id: formData.assigned_to // Map to user UUID
+        asignado_a: formData.assigned_to
       };
 
       if (isEditing) {

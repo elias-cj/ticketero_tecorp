@@ -40,7 +40,7 @@ pool.on('error', (error) => console.error('Error inesperado de PostgreSQL:', err
 const TABLES = {
   tickets: {
     module: 'Tickets',
-    columns: ['id', 'numero_ticket', 'titulo', 'descripcion', 'estado_id', 'tipo_problema_id', 'solucion_id', 'centro_contacto_id', 'solicitante_id', 'tecnico_asignado_id', 'creado_en', 'actualizado_en', 'extension', 'puesto_trabajo', 'modalidad_trabajo', 'ip_vpn', 'nombre_solicitante', 'registro_estado', 'fecha_asignacion', 'fecha_cierre', 'escalados'],
+    columns: ['id', 'numero_ticket', 'titulo', 'descripcion', 'estado_id', 'tipo_problema_id', 'solucion_id', 'centro_contacto_id', 'solicitante_id', 'tecnico_asignado_id', 'creado_en', 'actualizado_en', 'extension', 'puesto_trabajo', 'modalidad_trabajo', 'ip_vpn', 'nombre_solicitante', 'registro_estado', 'fecha_asignacion', 'fecha_cierre', 'escalados', 'vector_busqueda'],
   },
   tareas: { module: 'Tareas', columns: ['id', 'titulo', 'descripcion', 'estado_id', 'creado_en', 'actualizado_en', 'completado_en'] },
   asignados_tarea: { module: 'Tareas', columns: ['tarea_id', 'tecnico_id', 'asignado_en'] },
@@ -60,8 +60,8 @@ const TABLES = {
   estados_ticket: { module: 'Tickets', columns: ['id', 'nombre'], publicRead: true },
   prioridades_ticket: { module: 'Tickets', columns: ['id', 'nombre', 'nivel'], publicRead: true },
   soluciones: { module: 'Soluciones', columns: ['id', 'titulo', 'creado_en', 'esta_activo'] },
-  inventario: { module: 'Inventario', columns: ['id', 'nombre', 'categoria_id', 'codigo_nasa', 'numero_serie', 'estado', 'ubicacion', 'usuario_asignado_id', 'creado_en', 'actualizado_en'] },
-  licencias: { module: 'Licencias', columns: ['id', 'nombre', 'clave_licencia', 'fecha_expiracion', 'usuario_asignado_id', 'estado', 'notas', 'creado_en', 'actualizado_en'] },
+  inventario: { module: 'Inventario', columns: ['id', 'codigo', 'nombre', 'categoria', 'numero_serie', 'estado', 'asignado_a', 'centro_contacto_id', 'ubicacion', 'fecha_adquisicion', 'notas', 'creado_en', 'actualizado_en'] },
+  licencias: { module: 'Licencias', columns: ['id', 'nombre', 'proveedor', 'clave_licencia', 'cantidad_total', 'cantidad_usada', 'fecha_compra', 'fecha_vencimiento', 'estado', 'notas', 'creado_en', 'actualizado_en'] },
   informacion_empresa: { module: 'Configuración', columns: ['id', 'nombre_comercial', 'razon_social', 'id_fiscal', 'direccion', 'telefono', 'email_contacto', 'logo_url', 'creado_en', 'actualizado_en'], publicRead: true },
   registros_auditoria: { module: 'Configuración', columns: ['id', 'usuario_id', 'accion', 'entidad', 'entidad_id', 'detalles', 'creado_en'] },
   logs_auditoria: { module: 'Configuración', columns: ['id', 'usuario_id', 'accion', 'entidad', 'detalles', 'creado_en'] },
@@ -781,6 +781,8 @@ async function initAuxiliaryTables() {
     `);
 
     await dbQuery(`
+      ALTER TABLE public.tipos_problema ADD COLUMN IF NOT EXISTS categoria_id UUID REFERENCES public.categorias_problema(id) ON DELETE SET NULL;
+
       INSERT INTO public.informacion_empresa (nombre_comercial, razon_social, id_fiscal, direccion, telefono, email_contacto)
       SELECT 'TECORP S.A.', 'TECORP SOLUCIONES TECNOLÓGICAS S.A.', '1029384756', 'Av. Equipetrol Nro 100', '+591 3 3456789', 'soporte@tecorp.com'
       WHERE NOT EXISTS (SELECT 1 FROM public.informacion_empresa);

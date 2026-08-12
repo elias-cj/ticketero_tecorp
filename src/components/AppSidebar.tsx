@@ -97,19 +97,7 @@ const AppSidebar = () => {
       </SidebarContent>
 
       <SidebarFooter className="p-3 space-y-1">
-        {/* Wiki moved here */}
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <NavLink to="/wiki"
-                className="hover:bg-sidebar-accent/50 text-sidebar-foreground/80"
-                activeClassName="bg-sidebar-accent text-sidebar-foreground font-medium">
-                <BookOpen className={collapsed ? "mx-auto h-4 w-4" : "mr-3 h-4 w-4"} />
-                {!collapsed && <span className="text-sm">Wiki / Conocimiento</span>}
-              </NavLink>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+
 
         {/* Configuration - Controlled by 'Configuración' or 'Roles' for fallback */}
         <SidebarMenu>

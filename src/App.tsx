@@ -24,7 +24,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 const Tasks = lazy(() => import("./pages/Tasks"));
 const Schedules = lazy(() => import("./pages/Schedules"));
 const Solutions = lazy(() => import("./pages/Solutions"));
-const Wiki = lazy(() => import("./pages/Wiki"));
+
 const Configuration = lazy(() => import("./pages/Configuration"));
 const ProblemTypes = lazy(() => import("./pages/ProblemTypes"));
 const Inventory = lazy(() => import("./pages/Inventory"));
@@ -92,7 +92,7 @@ const App = () => (
                       </ProtectedRoute>
                     } />
 
-                    <Route path="/wiki" element={<Wiki />} />
+
                     
                     {/* Admin-only routes */}
                     <Route path="/configuracion" element={
