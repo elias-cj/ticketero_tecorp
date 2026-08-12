@@ -65,18 +65,26 @@ export const TicketCard = ({
   const canViewDetails = rolesConAcceso.some((r) => userRole.includes(r) || roleName.includes(r));
 
   const getPriorityFromTicket = (ticket: ExtendedTicket) => {
-    const desc = (ticket.description || ticket.descripcion || "").toLowerCase();
-    let scopeVal = "";
-    if (desc.includes("[afectados:")) {
-      const match = desc.match(/\[afectados:\s*([^\]]+)\]/i);
+    const raw = ticket.description || ticket.descripcion || "";
+    let scopeVal = ticket.cantidad_afectados || ticket.affectedScope || "";
+    if (!scopeVal) {
+      const match = raw.match(/\[afectados:\s*([^\]]+)\]/i);
       if (match && match[1]) {
         scopeVal = match[1].trim();
       }
     }
 
+    let cleanDesc = raw.replace(/\[afectados:\s*[^\]]+\]/gi, "").trim();
+    if (cleanDesc.includes("[MOTIVO DE ESCALADO]:") && cleanDesc.includes("[DESCRIPCIÓN ORIGINAL]:")) {
+      cleanDesc = cleanDesc.split("[DESCRIPCIÓN ORIGINAL]:")[0].replace("[MOTIVO DE ESCALADO]:", "").trim() || "Sin motivo";
+    }
+    if (!cleanDesc) {
+      cleanDesc = "Sin descripción";
+    }
+
     let label = "MEDIO";
     if (scopeVal) {
-      if (scopeVal.includes("todo") || scopeVal.includes("servicio")) {
+      if (scopeVal.toLowerCase().includes("todo") || scopeVal.toLowerCase().includes("servicio")) {
         label = "URGENTE";
       } else {
         const num = parseInt(scopeVal, 10);
@@ -89,18 +97,23 @@ export const TicketCard = ({
       }
     }
 
+    let style = "bg-amber-500/10 text-amber-600 border-amber-500/20";
     switch (label) {
       case "BAJO":
-        return { label: "BAJO", style: "bg-blue-500/10 text-blue-600 border-blue-500/20" };
+        style = "bg-blue-500/10 text-blue-600 border-blue-500/20";
+        break;
       case "MEDIO":
-        return { label: "MEDIO", style: "bg-amber-500/10 text-amber-600 border-amber-500/20" };
+        style = "bg-amber-500/10 text-amber-600 border-amber-500/20";
+        break;
       case "ALTO":
-        return { label: "ALTO", style: "bg-orange-500/10 text-orange-600 border-orange-500/20" };
+        style = "bg-orange-500/10 text-orange-600 border-orange-500/20";
+        break;
       case "URGENTE":
-        return { label: "URGENTE", style: "bg-rose-500/10 text-rose-600 border-rose-500/20 animate-pulse font-black" };
-      default:
-        return { label: "MEDIO", style: "bg-amber-500/10 text-amber-600 border-amber-500/20" };
+        style = "bg-rose-500/10 text-rose-600 border-rose-500/20 animate-pulse font-black";
+        break;
     }
+
+    return { label, style, scopeVal, cleanDesc };
   };
 
   const priorityInfo = getPriorityFromTicket(t);
@@ -109,7 +122,7 @@ export const TicketCard = ({
     <Card className="border-none ring-1 ring-border/50 hover:ring-primary/40 transition-all shadow-sm group bg-card overflow-hidden rounded-xl">
       <div className="h-[2px] w-full" style={{ background: flagGradient }} />
       <CardContent className="p-2.5 space-y-2">
-        {/* Header: Ticket Number, Date and Criticality Priority Badge */}
+        {/* Header: Ticket Number, Date, Criticality Priority Badge and Affected Count */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-1.5">
             <span className="text-[9px] font-black text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md border border-blue-500/20">
@@ -141,6 +154,11 @@ export const TicketCard = ({
             <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md border ${priorityInfo.style}`}>
               {priorityInfo.label}
             </span>
+            {priorityInfo.scopeVal && (
+              <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md border bg-slate-500/10 text-slate-400 border-slate-500/20">
+                AFECTADOS: {priorityInfo.scopeVal}
+              </span>
+            )}
           </div>
         </div>
 
@@ -167,13 +185,7 @@ export const TicketCard = ({
               DESCRIPCIÓN
             </span>
             <p className="text-[8.5px] text-muted-foreground leading-tight font-medium italic line-clamp-1">
-              "{(() => {
-                const raw = t.description || "Sin descripción";
-                if (raw.includes("[MOTIVO DE ESCALADO]:") && raw.includes("[DESCRIPCIÓN ORIGINAL]:")) {
-                  return raw.split("[DESCRIPCIÓN ORIGINAL]:")[0].replace("[MOTIVO DE ESCALADO]:", "").trim() || "Sin motivo";
-                }
-                return raw;
-              })()}"
+              "{priorityInfo.cleanDesc}"
             </p>
           </div>
         </div>

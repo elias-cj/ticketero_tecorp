@@ -182,7 +182,9 @@ CREATE TABLE IF NOT EXISTS tickets (
     vector_busqueda tsvector,
     fecha_asignacion TIMESTAMP WITH TIME ZONE,
     fecha_cierre TIMESTAMP WITH TIME ZONE,
-    escalados BOOLEAN DEFAULT FALSE
+    escalados BOOLEAN DEFAULT FALSE,
+    descripcion_solucion TEXT,
+    cantidad_afectados TEXT
 );
 
 -- =============================================================================

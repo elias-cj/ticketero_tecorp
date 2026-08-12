@@ -111,16 +111,28 @@ export const useTicketActions = () => {
     mutationFn: async ({
       ticketId,
       solutionId,
+      solutionDescription,
     }: {
       ticketId: string;
       solutionId: string;
+      solutionDescription?: string;
     }) => {
-      const statusId = statusMap[TICKET_STATUSES.CERRADO];
+      const statusId =
+        statusMap[TICKET_STATUSES.CERRADO] ||
+        Object.entries(statusMap).find(
+          ([name]) => name.toLowerCase().trim() === TICKET_STATUSES.CERRADO.toLowerCase().trim()
+        )?.[1];
+
+      if (!statusId) {
+        throw new Error(`Estado "${TICKET_STATUSES.CERRADO}" no encontrado en la base de datos.`);
+      }
+
       const { error } = await supabase
         .from("tickets")
         .update({
           estado_id: statusId,
           solucion_id: solutionId,
+          descripcion_solucion: solutionDescription?.trim() || null,
           actualizado_en: new Date().toISOString(),
           fecha_cierre: new Date().toISOString(),
         })
@@ -131,7 +143,10 @@ export const useTicketActions = () => {
       toast.success("Ticket cerrado correctamente");
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tickets });
     },
-    onError: () => toast.error("Error al cerrar el ticket"),
+    onError: (error: any) => {
+      console.error("Error al cerrar ticket:", error);
+      toast.error(error?.message || "Error al cerrar el ticket");
+    },
   });
 
   // Escalar Ticket (Duplicando el registro para IT)

@@ -47,16 +47,25 @@ const CreateTicket = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [cc, pt, pr] = await Promise.all([
-          supabase.from("call_centers").select("*").eq("esta_activo", true).order("nombre"),
-          supabase.from("tipos_problema").select("*").eq("esta_activo", true).order("nombre"),
-          supabase.from("prioridades_ticket").select("*"),
-        ]);
-        if (cc.data) setCallCenters(cc.data);
-        if (pt.data) setProblemTypes(pt.data);
-        if (pr.data) setPriorities(pr.data);
-        
-        // Códigos de país por defecto
+        const ccRes = await supabase
+          .from("call_centers")
+          .select("*")
+          .eq("esta_activo", true)
+          .order("nombre");
+        if (ccRes.data) setCallCenters(ccRes.data);
+
+        const ptRes = await supabase
+          .from("tipos_problema")
+          .select("*, categorias_problema(id, nombre)")
+          .eq("esta_activo", true)
+          .order("nombre");
+        if (ptRes.data) setProblemTypes(ptRes.data);
+
+        const prRes = await supabase
+          .from("prioridades_ticket")
+          .select("*");
+        if (prRes.data) setPriorities(prRes.data);
+
         setCountryCodes([
           { code: "+591", country: "BO" },
           { code: "+502", country: "GT" },
@@ -67,7 +76,7 @@ const CreateTicket = () => {
           { code: "+52", country: "MX" },
         ]);
       } catch (error) {
-        console.error(error);
+        console.error("Error al cargar opciones:", error);
         toast.error("Error al cargar opciones");
       } finally {
         setIsLoading(false);
@@ -82,7 +91,10 @@ const CreateTicket = () => {
     if (!form.workstation.trim()) e.workstation = "Requerido";
     if (!form.callCenter) e.callCenter = "Selecciona un call center";
     if (!form.problemType) e.problemType = "Selecciona un tipo";
-    if (!form.affectedScope) e.affectedScope = "Selecciona la cantidad de afectados";
+    const numAfectados = parseInt(form.affectedScope, 10);
+    if (!form.affectedScope || isNaN(numAfectados) || numAfectados < 1) {
+      e.affectedScope = "Ingresa un número válido de afectados (mínimo 1)";
+    }
     if (!form.phone.trim()) e.phone = "Número requerido";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -118,16 +130,12 @@ const CreateTicket = () => {
 
       // Mapear cantidad de afectados por número / rango a prioridad interna
       const getPriorityNameFromScope = (scopeVal: string): string => {
-        if (!scopeVal) return "MEDIO";
-        const norm = scopeVal.toString().trim().toLowerCase();
-        if (norm.includes("todo") || norm.includes("servicio")) return "URGENTE";
-        const num = parseInt(norm, 10);
-        if (isNaN(num)) return "MEDIO";
+        const num = parseInt(scopeVal, 10);
+        if (isNaN(num) || num < 1) return "BAJO";
         if (num === 1) return "BAJO";
         if (num >= 2 && num <= 4) return "MEDIO";
         if (num >= 5 && num <= 10) return "ALTO";
-        if (num > 10) return "URGENTE";
-        return "MEDIO";
+        return "URGENTE"; // > 10
       };
 
       const targetPriorityName = getPriorityNameFromScope(form.affectedScope);
@@ -143,7 +151,8 @@ const CreateTicket = () => {
           puesto_trabajo: form.workstation,
           centro_contacto_id: form.callCenter,
           tipo_problema_id: form.problemType, // ID del tipo de problema
-          descripcion: form.description ? `[Afectados: ${form.affectedScope}] ${form.description}` : `[Afectados: ${form.affectedScope}]`,
+          descripcion: form.description?.trim() || null,
+          cantidad_afectados: form.affectedScope || "1",
           modalidad_trabajo: workMode,
           extension: `${form.phoneCountryCode} ${form.phone}`,
           ip_vpn: workMode === "home-office" ? form.vpnIp : null,
@@ -284,15 +293,15 @@ const CreateTicket = () => {
                     className={workMode === "home-office" ? "opacity-60 cursor-not-allowed font-semibold bg-muted" : ""}
                   />
                 </Field>
-                <Field label="CALL CENTER" required error={errors.callCenter}>
+                <Field label="CALL CENTER / CENTRO DE LLAMADAS" required error={errors.callCenter}>
                   <Select
                     value={form.callCenter}
                     onValueChange={(v) => setForm(prev => ({ ...prev, callCenter: v }))}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar" />
+                      <SelectValue placeholder="-- Seleccionar Centro de Llamadas --" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-[300px]">
                       {callCenters.map((cc) => (
                         <SelectItem key={cc.id} value={cc.id}>
                           {cc.nombre}
@@ -303,20 +312,22 @@ const CreateTicket = () => {
                 </Field>
               </div>
 
-              {/* Fila 3: Categoría y Modalidad de Trabajo */}
+              {/* Fila 3: Categoría del Problema y Modalidad de Trabajo */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Field label="CATEGORÍA DEL PROBLEMA" required error={errors.problemType}>
+                <Field label="TIPO / CATEGORÍA DEL PROBLEMA" required error={errors.problemType}>
                   <Select
                     value={form.problemType}
                     onValueChange={(v) => setForm(prev => ({ ...prev, problemType: v }))}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar" />
+                      <SelectValue placeholder="-- Seleccionar Categoría / Tipo de Problema --" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-[300px]">
                       {problemTypes.map((pt) => (
                         <SelectItem key={pt.id} value={pt.id}>
-                          {pt.nombre}
+                          {pt.categorias_problema?.nombre
+                            ? `${pt.categorias_problema.nombre} — ${pt.nombre}`
+                            : pt.nombre}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -371,20 +382,17 @@ const CreateTicket = () => {
                   )}
                 </Field>
                 <Field label="CANTIDAD DE AFECTADOS" required error={errors.affectedScope}>
-                  <Select
+                  <Input
+                    type="number"
+                    min={1}
+                    step={1}
+                    placeholder="Ej: 1, 5, 12..."
                     value={form.affectedScope}
-                    onValueChange={(v) => setForm(prev => ({ ...prev, affectedScope: v }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar cantidad de afectados" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1</SelectItem>
-                      <SelectItem value="4">4</SelectItem>
-                      <SelectItem value="10">10</SelectItem>
-                      <SelectItem value="todo el servicio">todo el servicio</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      setForm((prev) => ({ ...prev, affectedScope: val }));
+                    }}
+                  />
                 </Field>
               </div>
 

@@ -40,7 +40,7 @@ pool.on('error', (error) => console.error('Error inesperado de PostgreSQL:', err
 const TABLES = {
   tickets: {
     module: 'Tickets',
-    columns: ['id', 'numero_ticket', 'titulo', 'descripcion', 'estado_id', 'tipo_problema_id', 'solucion_id', 'centro_contacto_id', 'solicitante_id', 'tecnico_asignado_id', 'creado_en', 'actualizado_en', 'extension', 'puesto_trabajo', 'modalidad_trabajo', 'ip_vpn', 'nombre_solicitante', 'registro_estado', 'fecha_asignacion', 'fecha_cierre', 'escalados', 'vector_busqueda'],
+    columns: ['id', 'numero_ticket', 'titulo', 'descripcion', 'estado_id', 'tipo_problema_id', 'solucion_id', 'centro_contacto_id', 'solicitante_id', 'tecnico_asignado_id', 'creado_en', 'actualizado_en', 'extension', 'puesto_trabajo', 'modalidad_trabajo', 'ip_vpn', 'nombre_solicitante', 'registro_estado', 'fecha_asignacion', 'fecha_cierre', 'escalados', 'vector_busqueda', 'descripcion_solucion', 'cantidad_afectados'],
   },
   tareas: { module: 'Tareas', columns: ['id', 'titulo', 'descripcion', 'estado_id', 'creado_en', 'actualizado_en', 'completado_en'] },
   asignados_tarea: { module: 'Tareas', columns: ['tarea_id', 'tecnico_id', 'asignado_en'] },
@@ -59,7 +59,7 @@ const TABLES = {
   categorias_problema: { module: 'Tipos de Problema', columns: ['id', 'nombre'], publicRead: true },
   estados_ticket: { module: 'Tickets', columns: ['id', 'nombre'], publicRead: true },
   prioridades_ticket: { module: 'Tickets', columns: ['id', 'nombre', 'nivel'], publicRead: true },
-  soluciones: { module: 'Soluciones', columns: ['id', 'titulo', 'creado_en', 'esta_activo'] },
+  soluciones: { module: 'Soluciones', columns: ['id', 'titulo', 'descripcion', 'creado_en', 'esta_activo'] },
   inventario: { module: 'Inventario', columns: ['id', 'codigo', 'nombre', 'categoria', 'numero_serie', 'estado', 'asignado_a', 'centro_contacto_id', 'ubicacion', 'fecha_adquisicion', 'notas', 'creado_en', 'actualizado_en'] },
   licencias: { module: 'Licencias', columns: ['id', 'nombre', 'proveedor', 'clave_licencia', 'cantidad_total', 'cantidad_usada', 'fecha_compra', 'fecha_vencimiento', 'estado', 'notas', 'creado_en', 'actualizado_en'] },
   informacion_empresa: { module: 'Configuración', columns: ['id', 'nombre_comercial', 'razon_social', 'id_fiscal', 'direccion', 'telefono', 'email_contacto', 'logo_url', 'creado_en', 'actualizado_en'], publicRead: true },
@@ -82,6 +82,7 @@ const PUBLIC_TICKET_SCHEMA = z.object({
   puesto_trabajo: z.string().trim().max(160).optional().nullable(),
   modalidad_trabajo: z.string().trim().max(50).optional().nullable(),
   ip_vpn: z.string().trim().ip().optional().nullable(),
+  cantidad_afectados: z.string().trim().max(100).optional().nullable(),
 });
 
 function base64UrlEncode(value) {
@@ -160,8 +161,8 @@ function cleanRow(table, row) {
 }
 
 function sendDatabaseError(res, error) {
-  console.error('Error de base de datos:', error.message);
-  return res.status(400).json({ code: error.code || 'BAD_REQUEST', message: 'La solicitud no se pudo procesar.' });
+  console.error('Error de base de datos:', error.message || error);
+  return res.status(400).json({ code: error.code || 'BAD_REQUEST', message: error.message || 'La solicitud no se pudo procesar.' });
 }
 
 async function getUserAccess(userId) {
@@ -411,10 +412,10 @@ app.post('/rest/v1/tickets', createRateLimiter({ windowMs: 60 * 60 * 1000, max: 
     const data = parsed.data;
     const ticketNumber = `TCK-${new Date().getFullYear()}-${crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
     const { rows } = await dbQuery(`
-      INSERT INTO public.tickets (numero_ticket, titulo, descripcion, estado_id, tipo_problema_id, centro_contacto_id, nombre_solicitante, extension, puesto_trabajo, modalidad_trabajo, ip_vpn, registro_estado)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'activo')
+      INSERT INTO public.tickets (numero_ticket, titulo, descripcion, estado_id, tipo_problema_id, centro_contacto_id, nombre_solicitante, extension, puesto_trabajo, modalidad_trabajo, ip_vpn, registro_estado, cantidad_afectados)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'activo', $12)
       RETURNING id, numero_ticket
-    `, [ticketNumber, data.titulo, data.descripcion || null, statusRows[0].id, data.tipo_problema_id, data.centro_contacto_id, data.nombre_solicitante, data.extension || null, data.puesto_trabajo || null, data.modalidad_trabajo || null, data.ip_vpn || null]);
+    `, [ticketNumber, data.titulo, data.descripcion || null, statusRows[0].id, data.tipo_problema_id, data.centro_contacto_id, data.nombre_solicitante, data.extension || null, data.puesto_trabajo || null, data.modalidad_trabajo || null, data.ip_vpn || null, data.cantidad_afectados || null]);
     return res.status(201).json(rows[0]);
   } catch (error) {
     return sendDatabaseError(res, error);
@@ -440,13 +441,13 @@ app.get('/rest/v1/:table', async (req, res, next) => {
         t.id, t.numero_ticket, t.titulo, t.descripcion, t.estado_id, t.tipo_problema_id,
         t.solucion_id, t.centro_contacto_id, t.solicitante_id, t.tecnico_asignado_id, t.creado_en, t.actualizado_en,
         t.extension, t.puesto_trabajo, t.modalidad_trabajo, t.ip_vpn, t.nombre_solicitante, t.registro_estado,
-        t.fecha_asignacion, t.fecha_cierre, t.escalados,
+        t.fecha_asignacion, t.fecha_cierre, t.escalados, t.descripcion_solucion, t.cantidad_afectados,
         CASE WHEN et.id IS NOT NULL THEN json_build_object('nombre', et.nombre) ELSE NULL END AS estados_ticket,
         CASE WHEN tp.id IS NOT NULL THEN json_build_object('nombre', tp.nombre) ELSE NULL END AS tipos_problema,
         CASE WHEN u.id IS NOT NULL THEN json_build_object('nombre_completo', u.nombre_completo) ELSE NULL END AS tecnico,
         CASE WHEN us.id IS NOT NULL THEN json_build_object('nombre_completo', us.nombre_completo, 'telefono', us.telefono) ELSE NULL END AS solicitante,
         CASE WHEN cc.id IS NOT NULL THEN json_build_object('id', cc.id, 'nombre', cc.nombre, 'codigo', cc.codigo, 'pais', cc.pais, 'nombre_corto', cc.nombre_corto, 'codigo_telefono', cc.codigo_telefono, 'color_bandera', cc.color_bandera) ELSE NULL END AS call_centers,
-        CASE WHEN sol.id IS NOT NULL THEN json_build_object('titulo', sol.titulo) ELSE NULL END AS soluciones
+        CASE WHEN sol.id IS NOT NULL THEN json_build_object('titulo', sol.titulo, 'descripcion', sol.descripcion) ELSE NULL END AS soluciones
       `;
       sql = `
         SELECT ${selectClause}
@@ -781,6 +782,8 @@ async function initAuxiliaryTables() {
     `);
 
     await dbQuery(`
+      ALTER TABLE public.tickets ADD COLUMN IF NOT EXISTS descripcion_solucion TEXT;
+      ALTER TABLE public.tickets ADD COLUMN IF NOT EXISTS cantidad_afectados TEXT;
       ALTER TABLE public.tipos_problema ADD COLUMN IF NOT EXISTS categoria_id UUID REFERENCES public.categorias_problema(id) ON DELETE SET NULL;
 
       INSERT INTO public.informacion_empresa (nombre_comercial, razon_social, id_fiscal, direccion, telefono, email_contacto)

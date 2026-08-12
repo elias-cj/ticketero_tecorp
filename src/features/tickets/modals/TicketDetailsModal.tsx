@@ -89,19 +89,39 @@ export const TicketDetailsModal = ({
           {/* Tipo y Descripción — con soporte para tickets escalados */}
           {(() => {
             const raw = ticket.description || "";
-            const isEscalado = raw.includes("[MOTIVO DE ESCALADO]:") && raw.includes("[DESCRIPCIÓN ORIGINAL]:");
+            let scopeVal = ticket.cantidad_afectados || ticket.affectedScope || "";
+            if (!scopeVal) {
+              const match = raw.match(/\[afectados:\s*([^\]]+)\]/i);
+              if (match && match[1]) {
+                scopeVal = match[1].trim();
+              }
+            }
+
+            const rawCleaned = raw.replace(/\[afectados:\s*[^\]]+\]/gi, "").trim();
+            const isEscalado = rawCleaned.includes("[MOTIVO DE ESCALADO]:") && rawCleaned.includes("[DESCRIPCIÓN ORIGINAL]:");
             const motivoEscalado = isEscalado
-              ? raw.split("[DESCRIPCIÓN ORIGINAL]:")[0].replace("[MOTIVO DE ESCALADO]:", "").trim()
+              ? rawCleaned.split("[DESCRIPCIÓN ORIGINAL]:")[0].replace("[MOTIVO DE ESCALADO]:", "").trim()
               : null;
-            const descripcionOriginal = isEscalado
-              ? raw.split("[DESCRIPCIÓN ORIGINAL]:")[1]?.trim()
-              : raw;
+            let descripcionOriginal = isEscalado
+              ? rawCleaned.split("[DESCRIPCIÓN ORIGINAL]:")[1]?.trim()
+              : rawCleaned;
+
+            if (!descripcionOriginal) {
+              descripcionOriginal = "Sin descripción";
+            }
 
             return (
               <div className="bg-muted/20 rounded-xl border border-border/30 px-3 py-2.5 space-y-1.5">
-                <div>
-                  <span className="text-[7px] font-black text-muted-foreground uppercase tracking-widest">TIPO DE PROBLEMA</span>
-                  <p className="text-[10.5px] font-extrabold text-foreground uppercase leading-tight">{ticket.problemType}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <span className="text-[7px] font-black text-muted-foreground uppercase tracking-widest">TIPO DE PROBLEMA</span>
+                    <p className="text-[10.5px] font-extrabold text-foreground uppercase leading-tight">{ticket.problemType}</p>
+                  </div>
+                  {scopeVal && (
+                    <Badge variant="outline" className="text-[8px] font-black uppercase py-0.5 px-2 bg-slate-500/10 text-slate-300 border-slate-500/20 shrink-0">
+                      AFECTADOS: {scopeVal}
+                    </Badge>
+                  )}
                 </div>
 
                 {isEscalado ? (
@@ -112,7 +132,7 @@ export const TicketDetailsModal = ({
                         DESCRIPCIÓN ORIGINAL
                       </span>
                       <p className="text-[9px] text-muted-foreground italic leading-relaxed">
-                        &quot;{descripcionOriginal || "Sin descripción."}&quot;
+                        &quot;{descripcionOriginal}&quot;
                       </p>
                     </div>
                     {/* Motivo de escalado */}
@@ -129,7 +149,7 @@ export const TicketDetailsModal = ({
                   <div className="border-t border-border/30 pt-1.5">
                     <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest">DESCRIPCIÓN</span>
                     <p className="text-[9px] text-muted-foreground italic leading-relaxed">
-                      &quot;{descripcionOriginal || "Sin descripción."}&quot;
+                      &quot;{descripcionOriginal}&quot;
                     </p>
                   </div>
                 )}
@@ -206,15 +226,29 @@ export const TicketDetailsModal = ({
                     {ticket.assignedTo === "No asignado" ? "Sin asignar" : ticket.assignedTo}
                   </span>
                 </div>
-                {ticket.solutionName && (
-                  <div className="mt-1 pt-1 border-t border-emerald-500/20">
-                    <span className="text-[7.5px] font-black text-emerald-600 uppercase tracking-widest">Solución:</span>
-                    <p className="text-[9px] font-bold text-emerald-600 leading-tight">{ticket.solutionName}</p>
-                  </div>
-                )}
               </div>
             </div>
           </div>
+
+          {/* Solución y Cierre (si existe o ticket está cerrado) */}
+          {(ticket.solutionName || ticket.solutionDescription || ticket.descripcion_solucion || ticket.status === "cerrado" || ticket.status === "resuelto") && (
+            <div className="bg-emerald-500/10 rounded-xl border border-emerald-500/20 px-3 py-2.5 space-y-1">
+              {ticket.solutionName && (
+                <div>
+                  <span className="text-[7px] font-black text-muted-foreground uppercase tracking-widest block">TIPO DE SOLUCIÓN</span>
+                  <p className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase leading-tight">
+                    {ticket.solutionName}
+                  </p>
+                </div>
+              )}
+              <div className={ticket.solutionName ? "pt-1 border-t border-emerald-500/20" : ""}>
+                <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest block">NOTAS / DESCRIPCIÓN DE CIERRE</span>
+                <p className="text-[9px] text-foreground font-medium italic leading-relaxed pt-0.5">
+                  &quot;{ticket.solutionDescription || ticket.descripcion_solucion || "Sin notas de cierre adicionales."}&quot;
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Línea de tiempo compacta horizontal */}
           <div className="bg-muted/10 rounded-xl border border-border/30 px-3 py-2.5">

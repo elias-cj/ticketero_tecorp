@@ -74,6 +74,7 @@ export const TicketListView = () => {
   const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
   const [ticketToClose, setTicketToClose] = useState<string | null>(null);
   const [selectedSolutionId, setSelectedSolutionId] = useState<string>("");
+  const [solutionDescription, setSolutionDescription] = useState<string>("");
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [selectedTicketDetails, setSelectedTicketDetails] = useState<ExtendedTicket | null>(null);
   const [isEscalateDialogOpen, setIsEscalateDialogOpen] = useState(false);
@@ -110,10 +111,15 @@ export const TicketListView = () => {
 
   const handleConfirmClose = async () => {
     if (!ticketToClose || !selectedSolutionId) return;
-    await closeTicket({ ticketId: ticketToClose, solutionId: selectedSolutionId });
+    await closeTicket({ 
+      ticketId: ticketToClose, 
+      solutionId: selectedSolutionId,
+      solutionDescription 
+    });
     setIsCloseDialogOpen(false);
     setTicketToClose(null);
     setSelectedSolutionId("");
+    setSolutionDescription("");
   };
 
   const handleConfirmEscalate = async (reason: string) => {
@@ -264,6 +270,8 @@ export const TicketListView = () => {
         solutions={solutions}
         selectedSolutionId={selectedSolutionId}
         setSelectedSolutionId={setSelectedSolutionId}
+        solutionDescription={solutionDescription}
+        setSolutionDescription={setSolutionDescription}
         handleConfirmClose={handleConfirmClose}
         isClosingAction={isMutationPending}
       />

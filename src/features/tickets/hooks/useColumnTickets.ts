@@ -93,13 +93,13 @@ export const useColumnTickets = (
         estado_id, solicitante_id,
         creado_en, actualizado_en, tecnico_asignado_id,
         extension, puesto_trabajo, modalidad_trabajo, ip_vpn,
-        nombre_solicitante, registro_estado, fecha_asignacion, fecha_cierre,
+        nombre_solicitante, registro_estado, fecha_asignacion, fecha_cierre, descripcion_solucion, cantidad_afectados,
         estados_ticket ( nombre ),
         tipos_problema ( nombre ),
         call_centers ( id, nombre, codigo, pais, nombre_corto, codigo_telefono, color_bandera ),
         solicitante:usuarios!solicitante_id ( nombre_completo, telefono ),
         tecnico:usuarios!tecnico_asignado_id ( nombre_completo ),
-        soluciones ( titulo )
+        soluciones ( titulo, descripcion )
       `;
 
       let query = supabase
@@ -215,7 +215,11 @@ export const useColumnTickets = (
         fechaAsignacion: t.fecha_asignacion,
         fechaCierre: t.fecha_cierre,
         solutionName: (t.soluciones as any)?.titulo || null,
+        solutionDescription: t.descripcion_solucion || (t.soluciones as any)?.descripcion || null,
+        descripcion_solucion: t.descripcion_solucion || (t.soluciones as any)?.descripcion || null,
         extension: t.extension || null,
+        cantidad_afectados: t.cantidad_afectados || null,
+        affectedScope: t.cantidad_afectados || null,
       } as ExtendedTicket;
     });
 

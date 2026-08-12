@@ -15,12 +15,12 @@ export const useTickets = (daysLimit?: number) => {
         estado_id, solicitante_id,
         creado_en, actualizado_en, tecnico_asignado_id,
         extension, puesto_trabajo, modalidad_trabajo, ip_vpn,
-        nombre_solicitante, registro_estado, fecha_asignacion, fecha_cierre,
+        nombre_solicitante, registro_estado, fecha_asignacion, fecha_cierre, descripcion_solucion, cantidad_afectados,
         estados_ticket ( nombre ),
         tipos_problema ( nombre ),
         call_centers ( id, nombre, codigo, pais ),
         solicitante:usuarios!solicitante_id ( nombre_completo, telefono ),
-        soluciones ( titulo )
+        soluciones ( titulo, descripcion )
       `;
 
       let allData: TicketRow[] = [];
@@ -43,12 +43,20 @@ export const useTickets = (daysLimit?: number) => {
 
         const { data, error } = await query;
 
-        if (error) throw error;
-        if (!data || data.length === 0) break;
+        if (error) {
+          console.error("Error fetching tickets page:", error);
+          throw error;
+        }
 
-        allData = [...allData, ...(data as any[])];
-        if (data.length < step) hasMore = false;
-        from += step;
+        if (data && data.length > 0) {
+          allData = [...allData, ...(data as any[])];
+          from += step;
+          if (data.length < step) {
+            hasMore = false;
+          }
+        } else {
+          hasMore = false;
+        }
       }
 
       return allData;
@@ -135,7 +143,11 @@ export const useTickets = (daysLimit?: number) => {
           fechaAsignacion: t.fecha_asignacion,
           fechaCierre: t.fecha_cierre,
           solutionName: (t.soluciones as any)?.titulo || null,
+          solutionDescription: (t as any).descripcion_solucion || (t.soluciones as any)?.descripcion || null,
+          descripcion_solucion: (t as any).descripcion_solucion || (t.soluciones as any)?.descripcion || null,
           extension: t.extension || null,
+          cantidad_afectados: t.cantidad_afectados || null,
+          affectedScope: t.cantidad_afectados || null,
         } as ExtendedTicket;
       });
     },

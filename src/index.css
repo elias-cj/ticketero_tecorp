@@ -176,3 +176,17 @@
     background-color: hsl(var(--sidebar-accent));
   }
 }
+
+/* Ocultar flechas numéricas (spinners) en inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+

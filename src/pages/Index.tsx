@@ -102,7 +102,7 @@ const FormCard = () => {
     supabase.from('call_centers').select('id, nombre').eq('esta_activo', true).order('nombre').then(({ data }) => {
       if (data) setCallCenters(data);
     });
-    supabase.from('tipos_problema').select('id, nombre').eq('esta_activo', true).order('nombre').then(({ data }) => {
+    supabase.from('tipos_problema').select('id, nombre, categorias_problema(id, nombre)').eq('esta_activo', true).order('nombre').then(({ data }) => {
       if (data) setProblemTypes(data);
     });
     supabase.from('prioridades_ticket').select('id, nombre').then(({ data }) => {
@@ -162,16 +162,12 @@ const FormCard = () => {
 
     // Mapear cantidad de afectados por número / rango a prioridad interna
     const getPriorityNameFromScope = (scopeVal: string): string => {
-      if (!scopeVal) return "MEDIO";
-      const norm = scopeVal.toString().trim().toLowerCase();
-      if (norm.includes("todo") || norm.includes("servicio")) return "URGENTE";
-      const num = parseInt(norm, 10);
-      if (isNaN(num)) return "MEDIO";
+      const num = parseInt(scopeVal, 10);
+      if (isNaN(num) || num < 1) return "BAJO";
       if (num === 1) return "BAJO";
       if (num >= 2 && num <= 4) return "MEDIO";
       if (num >= 5 && num <= 10) return "ALTO";
-      if (num > 10) return "URGENTE";
-      return "MEDIO";
+      return "URGENTE"; // > 10
     };
 
     const targetPriorityName = getPriorityNameFromScope(form.affectedScope);
@@ -182,7 +178,8 @@ const FormCard = () => {
 
     const { data, error } = await supabase.from('tickets').insert({
       titulo: form.problemType,
-      descripcion: form.description ? `[Afectados: ${form.affectedScope}] ${form.description}` : `[Afectados: ${form.affectedScope}]`,
+      descripcion: form.description?.trim() || null,
+      cantidad_afectados: form.affectedScope || "1",
       centro_contacto_id: form.callCenter,
       tipo_problema_id: tipoData?.id || null,
       estado_id: estadoData?.id || null,
@@ -270,11 +267,15 @@ const FormCard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-          <Field label="CATEGORÍA DEL PROBLEMA" required error={errors.problemType}>
+          <Field label="TIPO / CATEGORÍA DEL PROBLEMA" required error={errors.problemType}>
             <Select value={form.problemType} onValueChange={v => setForm(prev => ({ ...prev, problemType: v }))}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-              <SelectContent>
-                {problemTypes.map(pt => <SelectItem key={pt.id} value={pt.nombre}>{pt.nombre}</SelectItem>)}
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="-- Seleccionar Categoría / Tipo --" /></SelectTrigger>
+              <SelectContent className="max-h-[300px]">
+                {problemTypes.map(pt => (
+                  <SelectItem key={pt.id} value={pt.nombre}>
+                    {pt.categorias_problema?.nombre ? `${pt.categorias_problema.nombre} — ${pt.nombre}` : pt.nombre}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </Field>
@@ -305,20 +306,18 @@ const FormCard = () => {
             />
           </Field>
           <Field label="CANTIDAD DE AFECTADOS" required error={errors.affectedScope}>
-            <Select
+            <Input
+              type="number"
+              min={1}
+              step={1}
+              placeholder="Ej: 1, 5, 12..."
               value={form.affectedScope}
-              onValueChange={v => setForm(prev => ({ ...prev, affectedScope: v }))}
-            >
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue placeholder="Seleccionar cantidad de afectados" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="4">4</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="todo el servicio">todo el servicio</SelectItem>
-              </SelectContent>
-            </Select>
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "");
+                setForm((prev) => ({ ...prev, affectedScope: val }));
+              }}
+              className="h-8 text-xs"
+            />
           </Field>
         </div>
 

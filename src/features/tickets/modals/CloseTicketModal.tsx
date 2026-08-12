@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
@@ -23,6 +24,8 @@ interface CloseTicketModalProps {
   solutions: { id: string; name: string }[];
   selectedSolutionId: string;
   setSelectedSolutionId: (id: string) => void;
+  solutionDescription?: string;
+  setSolutionDescription?: (desc: string) => void;
   handleConfirmClose: () => void;
   isClosingAction: boolean;
 }
@@ -33,12 +36,14 @@ export const CloseTicketModal = ({
   solutions,
   selectedSolutionId,
   setSelectedSolutionId,
+  solutionDescription = "",
+  setSolutionDescription,
   handleConfirmClose,
   isClosingAction,
 }: CloseTicketModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[400px] border-none shadow-2xl backdrop-blur-xl bg-card/95">
+      <DialogContent className="sm:max-w-[420px] border-none shadow-2xl backdrop-blur-xl bg-card/95">
         <DialogHeader>
           <DialogTitle className="text-xl font-black italic uppercase flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-emerald-500" />
@@ -49,10 +54,10 @@ export const CloseTicketModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-6 space-y-4">
+        <div className="py-4 space-y-4">
           <div className="space-y-2">
             <Label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
-              Tipo de Solución
+              Tipo de Solución <span className="text-emerald-500">*</span>
             </Label>
             <Select onValueChange={setSelectedSolutionId} value={selectedSolutionId}>
               <SelectTrigger className="w-full font-bold border-border/40 focus:ring-emerald-500/20 bg-background/50 h-10">
@@ -70,6 +75,19 @@ export const CloseTicketModal = ({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 flex items-center justify-between">
+              <span>Detalle de la Solución</span>
+              <span className="text-[9px] text-muted-foreground font-semibold lowercase italic">(opcional)</span>
+            </Label>
+            <Textarea
+              placeholder="Escribe una breve descripción o notas adicionales sobre cómo fue resuelto el problema..."
+              value={solutionDescription}
+              onChange={(e) => setSolutionDescription && setSolutionDescription(e.target.value)}
+              className="font-medium text-xs border-border/40 focus:ring-emerald-500/20 bg-background/50 min-h-[90px] resize-none"
+            />
           </div>
         </div>
 

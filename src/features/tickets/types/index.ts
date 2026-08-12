@@ -35,5 +35,9 @@ export interface ExtendedTicket {
   fechaAsignacion?: string | null;
   fechaCierre?: string | null;
   solutionName?: string | null;
+  solutionDescription?: string | null;
+  descripcion_solucion?: string | null;
   extension?: string | null;
+  cantidad_afectados?: string | null;
+  affectedScope?: string | null;
 }

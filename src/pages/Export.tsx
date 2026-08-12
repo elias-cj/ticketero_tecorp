@@ -43,6 +43,7 @@ const Export = () => {
             tipos_problema(nombre),
             call_centers(nombre),
             descripcion,
+            descripcion_solucion,
             creado_en,
             fecha_asignacion,
             fecha_cierre,
@@ -101,6 +102,7 @@ const Export = () => {
           "Técnico Asignado": t.tecnico_asignado_id ? (mapaTecnicos.get(t.tecnico_asignado_id) || "Desconocido") : "Sin Asignar",
           "Estado": (t.estados_ticket as any)?.nombre || "Pendiente",
           "Solución": (t.soluciones as any)?.titulo || "N/A",
+          "Detalle Solución": t.descripcion_solucion || "",
           "Descripción": t.descripcion || ""
         };
 
@@ -125,11 +127,15 @@ const Export = () => {
         { wch: 25 }, // Técnico Asignado
         { wch: 15 }, // Estado
         { wch: 30 }, // Solución
+        { wch: 40 }, // Detalle Solución
         { wch: 50 }, // Descripción
       ];
       XLSX.utils.book_append_sheet(libroTrabajo, hojaTodos, "TODOS");
 
-      // 7. Iterar por cada Call Center y crear sus propias pestañas
+      // 7. Iterar por cada Call Center y crear sus propias pestañas únicas
+      const usedSheetNames = new Set<string>();
+      usedSheetNames.add("TODOS");
+
       Object.keys(ticketsPorCC).forEach(ccName => {
         const datosExcel = ticketsPorCC[ccName];
         const hojaTrabajo = XLSX.utils.json_to_sheet(datosExcel);
@@ -147,14 +153,28 @@ const Export = () => {
           { wch: 25 }, // Técnico Asignado
           { wch: 15 }, // Estado
           { wch: 30 }, // Solución
+          { wch: 40 }, // Detalle Solución
           { wch: 50 }, // Descripción
         ];
 
-        // Limpiar el nombre del Call Center para que sea un nombre de hoja válido en Excel
-        // Máximo 31 caracteres y sin caracteres especiales
-        const sheetName = ccName.replace(/[\\/?*[\]]/g, '').substring(0, 31);
+        // 1. Limpiar caracteres no válidos para nombres de pestañas en Excel (\ / ? * [ ] :)
+        let cleanName = ccName.replace(/[\\/?*[\]:]/g, '').trim() || "CallCenter";
         
-        // Añadir la hoja al libro
+        // 2. Truncar a máximo 31 caracteres (límite de Excel)
+        let sheetName = cleanName.substring(0, 31);
+        
+        // 3. Si el nombre ya existe en el libro, añadir un sufijo incremental único (2), (3) etc.
+        let counter = 2;
+        while (usedSheetNames.has(sheetName.toUpperCase())) {
+          const suffix = ` (${counter})`;
+          const maxBaseLen = 31 - suffix.length;
+          sheetName = `${cleanName.substring(0, maxBaseLen)}${suffix}`;
+          counter++;
+        }
+
+        usedSheetNames.add(sheetName.toUpperCase());
+        
+        // Añadir la hoja única al libro
         XLSX.utils.book_append_sheet(libroTrabajo, hojaTrabajo, sheetName);
       });
 
