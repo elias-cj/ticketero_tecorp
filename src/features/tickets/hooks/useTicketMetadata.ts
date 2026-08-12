@@ -64,30 +64,31 @@ export const useTicketMetadata = () => {
 
         if (errorRoles || !rolesData) return [];
 
-        // 3. Mapear roles a cada usuario
+        // 3. Mapear roles a cada usuario (soportando arreglo u objeto)
         const rolesMap: Record<string, string[]> = {};
         rolesData.forEach((rd: any) => {
           if (!rolesMap[rd.usuario_id]) rolesMap[rd.usuario_id] = [];
-          if (rd.roles?.nombre) rolesMap[rd.usuario_id].push(rd.roles.nombre.toLowerCase());
+          const rObj = Array.isArray(rd.roles) ? rd.roles[0] : rd.roles;
+          if (rObj?.nombre) {
+            rolesMap[rd.usuario_id].push(rObj.nombre.toLowerCase().trim());
+          }
         });
 
-        // 4. Filtrar usuarios según las reglas
+        // 4. Filtrar usuarios estrictamente por los roles asignados en la BD
         const filtered = usersData.filter((u) => {
           const userRoles = rolesMap[u.id] || [];
 
-          // REGLA 1: El técnico DEBE tener el rol correspondiente a la cola
-          const isITTech = userRoles.some(r => r.includes("it") || r.includes("especializado"));
-          const isSoporteTech = userRoles.some(r => r.includes("soporte") || r.includes("técnico") || r.includes("tecnico"));
-          const isUserAdmin = userRoles.some(r => r.includes("admin") || r.includes("supremo"));
+          const isITTech = userRoles.some(r => r === "it" || r.includes("especializado") || r.includes("infraestructura"));
+          const isSoporteTech = userRoles.some(r => r.includes("soporte"));
+          const isSuperAdminUser = userRoles.some(r => r.includes("administrador supremo") || r.includes("superadmin") || r.includes("supremo"));
 
-          // Filtrado por pestaña activa
           if (queue === "it") {
-            if (!isITTech && !isUserAdmin && !isAdmin) return false;
+            // En cola IT: mostrar unicamente técnicos de IT (o Administrador Supremo)
+            return isITTech || isSuperAdminUser;
           } else {
-            if (!isSoporteTech && !isUserAdmin && !isAdmin) return false;
+            // En cola Soporte: mostrar unicamente técnicos con rol de Soporte (o Administrador Supremo)
+            return isSoporteTech || isSuperAdminUser;
           }
-
-          return true;
         });
 
         return filtered.map((u) => ({

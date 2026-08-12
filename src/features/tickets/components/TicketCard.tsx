@@ -33,17 +33,36 @@ export const TicketCard = ({
   currentQueue,
   onOpenDetails,
 }: TicketCardProps) => {
+  const currentUserId = user?.id || user?.userId;
   const userRole = (user?.role || "").toLowerCase().trim();
-  const isSoporteTecnico = userRole === "soporte técnico" || userRole === "soporte";
+  const roleName = (user?.roleName || "").toLowerCase().trim();
+  const userRolesList: string[] = (user?.roles || []).map((r: any) =>
+    (typeof r === "string" ? r : r.nombre || "").toLowerCase().trim()
+  );
+  if (userRole) userRolesList.push(userRole);
+  if (roleName) userRolesList.push(roleName);
+
+  const isSuperAdmin = userRolesList.some((r) =>
+    r.includes("superadmin") || r.includes("superadm") || r.includes("supremo")
+  );
+
+  // ¿Tiene rol de IT o Admin que le permita asignar a OTROS técnicos?
+  const canAssignToOthers =
+    isSuperAdmin ||
+    userRolesList.some((r) =>
+      r.includes("admin") || r.includes("semiadm") || r.includes("it") || r.includes("especializado") || r.includes("infraestructura")
+    );
+
+  // Si es únicamente Técnico de Soporte (sin permisos de IT ni Admin)
+  const isOnlySoporte = !canAssignToOthers;
 
   const permissions = user?.permissions || {};
-  const isSuperAdmin = userRole === "superadmin" || userRole === "superadm" || userRole === "administrador supremo";
   const canCall = isSuperAdmin || Boolean(permissions["Tickets"]?.includes("LLAMAR"));
   const canEditTicket = isSuperAdmin || Boolean(permissions["Tickets"]?.includes("EDITAR"));
 
   // Solo roles autorizados pueden ver el detalle del ticket
   const rolesConAcceso = ["soporte", "soporte técnico", "it", "it especializado", "admin", "administrador", "superadmin", "superadm", "administrador supremo"];
-  const canViewDetails = rolesConAcceso.some((r) => userRole.includes(r));
+  const canViewDetails = rolesConAcceso.some((r) => userRole.includes(r) || roleName.includes(r));
 
   const getPriorityFromTicket = (ticket: ExtendedTicket) => {
     const desc = (ticket.description || ticket.descripcion || "").toLowerCase();
@@ -161,11 +180,11 @@ export const TicketCard = ({
 
         <div className="flex flex-wrap items-center justify-between gap-1 -mt-1">
           {canAssign && t.status === "abierto" && (
-            (isSoporteTecnico && currentQueue !== "it") ? (
+            isOnlySoporte ? (
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => handleAssign(t.id, user.id)}
+                onClick={() => handleAssign(t.id, currentUserId)}
                 className="h-7 px-2.5 text-[9px] font-black border-border bg-muted/50 rounded-lg shadow-sm hover:bg-primary hover:text-white transition-all"
               >
                 <UserPlus className="h-3 w-3 mr-1" /> ASIGNARME
@@ -183,6 +202,9 @@ export const TicketCard = ({
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-1">
                   <div className="space-y-0.5">
+                    <div className="px-2 py-1 mb-1 text-[7px] font-black text-muted-foreground uppercase tracking-widest bg-muted/50 rounded">
+                      Técnicos Disponibles ({currentQueue === "it" ? "IT" : "Soporte"})
+                    </div>
                     {technicians.map((tech: any) => (
                       <PopoverClose key={tech.id} asChild>
                         <button
@@ -199,35 +221,48 @@ export const TicketCard = ({
             )
           )}
 
-          {(t.status === "en-proceso" || t.status === "escalado") && (currentQueue === "it" || !isSoporteTecnico) && (
-            <Popover>
-              <PopoverTrigger asChild>
+          {(t.status === "en-proceso" || t.status === "escalado") && (
+            isOnlySoporte ? (
+              t.assignedTo !== currentUserId && (
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 px-2.5 text-[9px] font-black border-border bg-muted/50 rounded-lg shadow-sm"
+                  onClick={() => handleAssign(t.id, currentUserId)}
+                  className="h-7 px-2.5 text-[9px] font-black border-border bg-muted/50 rounded-lg shadow-sm hover:bg-primary hover:text-white transition-all"
                 >
-                  <UserPlus className="h-3 w-3 mr-1" /> RE-ASIG
+                  <UserPlus className="h-3 w-3 mr-1" /> ASIGNARME
                 </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48 p-1">
-                <div className="space-y-0.5">
-                  <div className="px-2 py-1 mb-1 text-[7px] font-black text-muted-foreground uppercase tracking-widest bg-muted/50 rounded">
-                    Técnicos Disponibles
+              )
+            ) : (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 px-2.5 text-[9px] font-black border-border bg-muted/50 rounded-lg shadow-sm"
+                  >
+                    <UserPlus className="h-3 w-3 mr-1" /> RE-ASIG
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-1">
+                  <div className="space-y-0.5">
+                    <div className="px-2 py-1 mb-1 text-[7px] font-black text-muted-foreground uppercase tracking-widest bg-muted/50 rounded">
+                      Técnicos Disponibles ({currentQueue === "it" ? "IT" : "Soporte"})
+                    </div>
+                    {technicians.map((tech: any) => (
+                      <PopoverClose key={tech.id} asChild>
+                        <button
+                          onClick={() => handleAssign(t.id, tech.id)}
+                          className="w-full text-left px-2 py-1.5 text-[10px] font-bold rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-between"
+                        >
+                          {tech.full_name} <ChevronRight className="h-3 w-3" />
+                        </button>
+                      </PopoverClose>
+                    ))}
                   </div>
-                  {technicians.map((tech: any) => (
-                    <PopoverClose key={tech.id} asChild>
-                      <button
-                        onClick={() => handleAssign(t.id, tech.id)}
-                        className="w-full text-left px-2 py-1.5 text-[10px] font-bold rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-between"
-                      >
-                        {tech.full_name} <ChevronRight className="h-3 w-3" />
-                      </button>
-                    </PopoverClose>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover>
+                </PopoverContent>
+              </Popover>
+            )
           )}
 
           {/* Botones de Cierre / Escalado */}
