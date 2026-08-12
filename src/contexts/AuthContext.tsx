@@ -49,8 +49,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const merged: Record<string, string[]> = {};
       (rpData || []).forEach((rp: any) => {
         const p = rp.permisos || rp;
-        const moduleName: string = p?.modulos?.nombre || p?.modulo;
-        const actionName: string = p?.acciones?.nombre || p?.accion;
+        const modObj = Array.isArray(p?.modulos) ? p.modulos[0] : p.modulos;
+        const accObj = Array.isArray(p?.acciones) ? p.acciones[0] : p.acciones;
+        const moduleName: string = modObj?.nombre || p?.modulo;
+        const actionName: string = accObj?.nombre || p?.accion;
         if (!moduleName || !actionName) return;
         if (!merged[moduleName]) merged[moduleName] = [];
         if (!merged[moduleName].includes(actionName)) {

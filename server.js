@@ -792,7 +792,13 @@ async function initAuxiliaryTables() {
       CREATE OR REPLACE FUNCTION public.sembrar_matriz_rbac_inicial()
       RETURNS void AS $$
       BEGIN
-        INSERT INTO public.acciones (nombre) VALUES ('VER'), ('CREAR'), ('EDITAR'), ('ELIMINAR'), ('LLAMAR')
+        INSERT INTO public.acciones (nombre) VALUES 
+          ('VER'), ('CREAR'), ('EDITAR'), ('ELIMINAR'), ('LLAMAR'),
+          -- Acciones especiales del Dashboard (filtros por Call Center)
+          ('Guatemala'), ('Bolivia'), ('Panamá'), ('Nicaragua'), ('Paraguay'),
+          ('Televenta Panamá'), ('Televenta Nicaragua'), ('Televentas'),
+          ('RRHH'), ('Nacional Seguros'), ('NOC'), ('Multiskill'),
+          ('Cobranzas'), ('Innovación'), ('Marathon'), ('CDLA'), ('BI'), ('Linde')
         ON CONFLICT (nombre) DO NOTHING;
 
         INSERT INTO public.modulos (nombre) VALUES 

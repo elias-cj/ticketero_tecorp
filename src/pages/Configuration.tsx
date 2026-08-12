@@ -22,22 +22,21 @@ const TABS = [
   { id: "auditoria", label: "Auditoría", icon: Database },
 ];
 
-const MODULE_LIST = ["Dashboard", "Tickets", "Tareas", "Cola IT", "Horarios", "Usuarios", "Roles", "Call Centers", "Inventario", "Licencias", "Soluciones", "Tipos de Problema", "Exportación", "Configuración"];
-
-const DEFAULT_ACTIONS = ["VER", "CREAR", "EDITAR", "ELIMINAR"];
-const MODULE_SPECIFIC_ACTIONS: Record<string, string[]> = {
-  "Dashboard": ["VER", "Guatemala", "Bolivia", "Panamá", "Nicaragua", "Paraguay", "Televenta Panamá", "Televenta Nicaragua", "Televentas", "RRHH", "Nacional Seguros", "NOC", "Multiskill", "Cobranzas", "Innovación", "Marathon", "CDLA", "BI", "Linde"],
-  "Call Centers": ["VER", "CREAR", "EDITAR", "ELIMINAR", "LLAMAR"],
-};
+// Las acciones CRUD estándar — se usan para separar las acciones especiales del Dashboard
+const STANDARD_ACTIONS = ["VER", "CREAR", "EDITAR", "ELIMINAR", "LLAMAR"];
 
 export default function Configuration() {
   const [activeTab, setActiveTab] = useState("usuarios");
-  const { user } = useAuth();
+  const { user, refreshPermissions } = useAuth();
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [roles, setRoles] = useState<any[]>([]);
   const [userRoles, setUserRoles] = useState<any[]>([]);
   const [companyInfo, setCompanyInfo] = useState<any>(null);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
+
+  // Módulos y acciones cargados dinámicamente desde PostgreSQL
+  const [dbModules, setDbModules] = useState<string[]>([]);
+  const [dbActions, setDbActions] = useState<string[]>([]);
 
   // States for Editors
   const [editingRole, setEditingRole] = useState<any>(null);
@@ -139,13 +138,19 @@ export default function Configuration() {
   const fetchAllData = async () => {
     setIsLoading(true);
 
-    // ─── Queries paralelas básicas ────────────────────────────────────────────
-    const [pRes, rRes, urRes, cRes] = await Promise.all([
+    // ─── Queries paralelas básicas + catálogos RBAC ───────────────────────────
+    const [pRes, rRes, urRes, cRes, modCatRes, actCatRes] = await Promise.all([
       supabase.from('usuarios').select('*').order('nombre_completo'),
       supabase.from('roles').select('id, nombre, descripcion').order('nombre'),
       supabase.from('roles_usuario').select('usuario_id, rol_id'),
       supabase.from('informacion_empresa').select('*').limit(1).maybeSingle(),
+      supabase.from('modulos').select('nombre').order('nombre'),
+      supabase.from('acciones').select('nombre').order('nombre'),
     ]);
+
+    // Guardar catálogos dinámicos de módulos y acciones desde la BD
+    if (modCatRes.data) setDbModules(modCatRes.data.map((m: any) => m.nombre));
+    if (actCatRes.data) setDbActions(actCatRes.data.map((a: any) => a.nombre));
 
     // Cargar permisos con nombres de módulos y acciones
     const { data: rpRows } = await supabase.from('permisos_rol').select('rol_id, permiso_id');
@@ -322,26 +327,51 @@ export default function Configuration() {
 
     const targetPermIds: string[] = [];
     const permsMap: Record<string, string[]> = editingRole.permissions || {};
-    Object.entries(permsMap).forEach(([modName, actions]) => {
+
+    for (const [modName, actions] of Object.entries(permsMap)) {
       const modId = moduleMap[modName];
-      if (!modId) return;
-      (actions as string[]).forEach((actionName) => {
+      if (!modId) continue;
+
+      for (const actionName of (actions as string[])) {
         const actId = actionMap[actionName];
-        if (!actId) return;
-        const permId = permLookup[`${modId}:${actId}`];
-        if (permId) targetPermIds.push(permId);
-      });
-    });
+        if (!actId) continue;
+
+        let permId = permLookup[`${modId}:${actId}`];
+
+        // Si el par (modulo_id, accion_id) no existe en la tabla permisos, crearlo
+        if (!permId) {
+          const { data: newPerm, error: newPermErr } = await supabase
+            .from('permisos')
+            .insert({ modulo_id: modId, accion_id: actId })
+            .select('id')
+            .single();
+
+          if (!newPermErr && newPerm) {
+            permId = newPerm.id;
+            permLookup[`${modId}:${actId}`] = permId;
+          }
+        }
+
+        if (permId) {
+          targetPermIds.push(permId);
+        }
+      }
+    }
+
+    // Deduplicar permIds para evitar violaciones de clave primaria
+    const uniquePermIds = Array.from(new Set(targetPermIds));
 
     // 2c. Reemplazar permisos_rol
     await supabase.from('permisos_rol').delete().eq('rol_id', savedRoleId);
-    if (targetPermIds.length > 0) {
+    if (uniquePermIds.length > 0) {
       const { error: insertError } = await supabase.from('permisos_rol').insert(
-        targetPermIds.map(pid => ({ rol_id: savedRoleId, permiso_id: pid }))
+        uniquePermIds.map(pid => ({ rol_id: savedRoleId, permiso_id: pid }))
       );
       if (insertError) {
         toast.error("Hubo un error al guardar los permisos: " + insertError.message);
-        console.error(insertError);
+        console.error("Error al insertar permisos_rol:", insertError);
+        setIsSavingRole(false);
+        return;
       }
     }
 
@@ -350,6 +380,8 @@ export default function Configuration() {
     setIsSavingRole(false);
     setEditingRole(null);
     fetchAllData();
+    // Refresh the logged-in user's permissions so the sidebar updates in real-time
+    await refreshPermissions();
   };
 
   const deleteRole = async (id: string, name: string) => {
@@ -739,7 +771,7 @@ export default function Configuration() {
                       <tbody className="divide-y divide-border/60">
                         {roles.map(r => {
                           const userCount = getRoleUserCount(r.id);
-                          const rolePermMap = rolePermissions[r.id] || permsByRole[r.id] || {};
+                          const rolePermMap = r.permissions || {};
                           let permCount = 0;
                           Object.values(rolePermMap).forEach((accs: any) => {
                             permCount += Array.isArray(accs) ? accs.length : 0;
@@ -819,16 +851,22 @@ export default function Configuration() {
                   </div>
 
                   <div className="p-6 md:p-8 space-y-4 max-w-5xl">
-                    <h4 className="text-[11px] uppercase font-black tracking-widest text-primary mb-6">Accesos Especiales y Dashboard</h4>
+                    <h4 className="text-[11px] uppercase font-black tracking-widest text-primary mb-6">Permisos por Módulo (desde Base de Datos)</h4>
 
-                    {MODULE_LIST.map((modName) => {
+                    {dbModules.map((modName) => {
                       const perms = editingRole.permissions?.[modName] || [];
+                      // Para Dashboard: mostrar todas las acciones de la BD
+                      // Para otros módulos: mostrar solo acciones CRUD estándar
+                      const isDashboard = modName === "Dashboard";
+                      const actionsForModule = isDashboard
+                        ? dbActions // Todas las acciones (VER + filtros de call center)
+                        : dbActions.filter(a => STANDARD_ACTIONS.includes(a)); // Solo CRUD
                       return (
                         <div key={modName} className="flex flex-col md:flex-row md:items-center justify-between p-5 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors gap-4">
                           <h3 className="text-lg font-bold text-foreground/80">{modName}</h3>
 
                           <div className="flex flex-wrap items-center gap-2">
-                            {(MODULE_SPECIFIC_ACTIONS[modName] || DEFAULT_ACTIONS).map(level => {
+                            {actionsForModule.map(level => {
                               const active = perms.includes(level);
                               return (
                                 <button
