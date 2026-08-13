@@ -25,10 +25,11 @@
 - **Animaciones**: Framer Motion
 - **Gestión de Estado y Data**: TanStack React Query + React Router v6
 
-### **Backend & API**
-- **Servidor**: Node.js + Express.js
-- **Seguridad**: Autenticación JWT + Bcryptjs + Validaciones Zod + Middleware RBAC
-- **Persistencia**: PostgreSQL (Driver `pg` nativo + Supabase Client)
+### **Backend & API (Clean Architecture)**
+- **Servidor**: Node.js + Express.js en Arquitectura Limpia (Dominio, Casos de Uso, Adaptadores e Infraestructura)
+- **Seguridad**: Autenticación JWT (`jsonwebtoken`) + Bcryptjs + Validaciones Zod + Middleware RBAC dinámico con caché en memoria
+- **Persistencia**: PostgreSQL nativo (Driver `pg` parametrizado con Repositorios desacoplados)
+- **Sincronización Reactiva**: Sincronización continua de datos vía TanStack React Query (HTTP Auto-Refetching)
 
 ### **Base de Datos (PostgreSQL)**
 - **Esquema Normalizado 3FN**: `usuarios`, `roles`, `roles_usuario`, `modulos`, `acciones`, `permisos`, `permisos_rol`.
@@ -36,7 +37,15 @@
 
 ---
 
-## 📂 Estructura del Proyecto
+## 📂 Estructura del Backend (Clean Architecture)
+
+```
+server/
+├── domain/            # Core: Entidades puras (Ticket, User), Errores y Puertos (ITicketRepository)
+├── use-cases/         # Aplicación: Casos de uso (CreateTicket, AuthenticateUser, GetTicketsPaging)
+├── adapters/          # Adaptadores: Controllers (HTTP), Repositorios (PgTicketRepository), DTOs (Zod)
+└── infrastructure/    # Infraestructura: Express App, Database Pool, Middlewares (JWT, RateLimiter)
+```
 
 ```text
 support-connect/

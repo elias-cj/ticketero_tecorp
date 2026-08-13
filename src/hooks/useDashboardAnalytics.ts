@@ -109,7 +109,7 @@ export function useDashboardAnalytics() {
       // Normalizar los tickets al formato esperado por los cálculos de analytics
       const tickets = allTickets.map((t: any) => {
         const ccEntry = Array.isArray(t.call_centers) ? t.call_centers[0] : t.call_centers;
-        const techEntry = Array.isArray(t.tecnico) ? t.tecnico[0] : t.tecnico;
+        const techEntry = Array.isArray(t.tecnico) ? t.tecnico[0] : (t.tecnico || t.tecnico_asignado);
         const statusEntry = Array.isArray(t.estados_ticket) ? t.estados_ticket[0] : t.estados_ticket;
         const probEntry = Array.isArray(t.tipos_problema) ? t.tipos_problema[0] : t.tipos_problema;
 
@@ -154,7 +154,7 @@ export function useDashboardAnalytics() {
             id,
             nombre_completo,
             esta_activo,
-            roles_usuario!roles_usuario_usuario_id_fkey(roles(nombre))
+            roles_usuario(roles(nombre))
           `)
           .eq('esta_activo', true),
       ]);
@@ -166,6 +166,9 @@ export function useDashboardAnalytics() {
         const hasSoporte = rolesArr.some((ru: any) => {
           const rawStr = typeof ru === 'string' ? ru : JSON.stringify(ru);
           const rName = (ru?.roles?.nombre || ru?.nombre || rawStr).toLowerCase();
+          if (rName === 'it' || rName.includes('it especializ') || rName.includes('infraestructura') || rName.includes('bi')) {
+            return false;
+          }
           return rName.includes('soporte') || rName.includes('tecnico') || rName.includes('técnico');
         });
 

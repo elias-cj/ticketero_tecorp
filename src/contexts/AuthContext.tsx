@@ -34,32 +34,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roleIds = urData.map(r => r.rol_id);
       }
 
-      const { data: rpData, error: rpError } = await supabase
-        .from('permisos_rol')
-        .select(`
-          permisos (
-            modulos ( nombre ),
-            acciones  ( nombre )
-          )
-        `)
-        .in('rol_id', roleIds);
-
-      if (rpError) throw rpError;
-
-      const merged: Record<string, string[]> = {};
-      (rpData || []).forEach((rp: any) => {
-        const p = rp.permisos || rp;
-        const modObj = Array.isArray(p?.modulos) ? p.modulos[0] : p.modulos;
-        const accObj = Array.isArray(p?.acciones) ? p.acciones[0] : p.acciones;
-        const moduleName: string = modObj?.nombre || p?.modulo;
-        const actionName: string = accObj?.nombre || p?.accion;
-        if (!moduleName || !actionName) return;
-        if (!merged[moduleName]) merged[moduleName] = [];
-        if (!merged[moduleName].includes(actionName)) {
-          merged[moduleName].push(actionName);
-        }
+      // Usar RPC dedicado que hace JOINs en el backend
+      // Devuelve directamente { módulo: [acciones] }
+      const { data, error } = await supabase.rpc('obtener_permisos_usuario', {
+        p_role_ids: roleIds,
       });
-      return merged;
+
+      if (error) throw error;
+      return (data as Record<string, string[]>) || {};
     } catch (e) {
       console.error("Error fetching permissions:", e);
       return {};
