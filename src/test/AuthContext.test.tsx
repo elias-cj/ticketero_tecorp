@@ -8,6 +8,7 @@ import React from 'react';
 vi.mock("@/lib/supabase", () => ({
   supabase: {
     from: vi.fn(),
+    rpc: vi.fn(),
   },
 }));
 
@@ -39,38 +40,36 @@ describe("AuthContext", () => {
     await waitFor(() => expect(getByTestId("auth-status").textContent).toBe("Logged Out"));
   });
 
-  it("should fetch permissions correctly on login", async () => {
+  it("should fetch permissions correctly on login via RPC", async () => {
     const mockUser = { id: "user-123", name: "Test User", email: "test@example.com" };
-    const mockPermissions = [
-      {
-        permisos: {
-          modulos: { nombre: "Tickets" },
-          acciones: { nombre: "VER" }
-        }
-      },
-      {
-        permisos: {
-          modulos: { nombre: "Tickets" },
-          acciones: { nombre: "CREAR" }
-        }
-      }
-    ];
+    const mockPermissionsMap = {
+      Tickets: ["VER", "CREAR"],
+    };
 
-    // Mock supabase calls
+    // Mock roles_usuario lookup
     (supabase.from as any).mockImplementation((table: string) => {
       if (table === "roles_usuario") {
         return {
           select: vi.fn().mockReturnThis(),
-          eq: vi.fn().mockResolvedValue({ data: [{ rol_id: "role-1" }] })
+          eq: vi.fn().mockResolvedValue({ data: [{ rol_id: "role-1" }], error: null })
         };
       }
-      if (table === "permisos_rol") {
+      if (table === "usuarios") {
         return {
           select: vi.fn().mockReturnThis(),
-          in: vi.fn().mockResolvedValue({ data: mockPermissions, error: null })
+          eq: vi.fn().mockReturnThis(),
+          maybeSingle: vi.fn().mockResolvedValue({ data: { esta_activo: true }, error: null })
         };
       }
       return { select: vi.fn().mockReturnThis() };
+    });
+
+    // Mock RPC call
+    (supabase.rpc as any).mockImplementation((fn: string) => {
+      if (fn === "obtener_permisos_usuario") {
+        return Promise.resolve({ data: mockPermissionsMap, error: null });
+      }
+      return Promise.resolve({ data: null, error: null });
     });
 
     const LoginTrigger = () => {
@@ -95,13 +94,17 @@ describe("AuthContext", () => {
     });
   });
 
-  it("should handle error in permission fetching", async () => {
+  it("should handle error in permission fetching gracefully", async () => {
     const mockUser = { id: "user-123", name: "Test User" };
 
     (supabase.from as any).mockImplementation(() => ({
       select: vi.fn().mockReturnThis(),
-      in: vi.fn().mockResolvedValue({ data: null, error: new Error("DB Error") })
+      eq: vi.fn().mockResolvedValue({ data: [{ rol_id: "role-1" }] })
     }));
+
+    (supabase.rpc as any).mockImplementation(() => {
+      return Promise.resolve({ data: null, error: new Error("DB RPC Error") });
+    });
 
     const LoginTrigger = () => {
       const { login } = useAuth();

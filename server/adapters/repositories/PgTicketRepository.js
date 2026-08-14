@@ -1,4 +1,5 @@
 import { ITicketRepository } from '../../domain/ports/ITicketRepository.js';
+import { pool } from '../../infrastructure/database/db.js';
 
 export class PgTicketRepository extends ITicketRepository {
   constructor(dbQuery) {
@@ -57,6 +58,11 @@ export class PgTicketRepository extends ITicketRepository {
     const limitIndex = values.length + 1;
     const offsetIndex = values.length + 2;
 
+    // Normalizar cláusula ORDER BY
+    const safeOrder = order && /^[a-z_][a-z0-9_]*(\.(desc|asc))?$/i.test(order)
+      ? order.replace('.', ' ').toUpperCase()
+      : 'creado_en DESC';
+
     const querySql = `
       SELECT t.*, 
              st.nombre AS estado_nombre, 
@@ -69,7 +75,7 @@ export class PgTicketRepository extends ITicketRepository {
       LEFT JOIN public.call_centers cc ON cc.id = t.centro_contacto_id
       LEFT JOIN public.usuarios u ON u.id = t.tecnico_asignado_id
       ${whereSql}
-      ORDER BY t.creado_en DESC
+      ORDER BY t.${safeOrder}
       LIMIT $${limitIndex} OFFSET $${offsetIndex}
     `;
 
@@ -114,12 +120,81 @@ export class PgTicketRepository extends ITicketRepository {
       SET estado_id = (SELECT id FROM public.estados_ticket WHERE LOWER(nombre) = 'cerrado' LIMIT 1),
           solucion_id = $2,
           descripcion_solucion = $3,
+          tecnico_asignado_id = COALESCE(tecnico_asignado_id, $4),
           fecha_cierre = NOW(),
           actualizado_en = NOW()
       WHERE id = $1
       RETURNING *
     `;
-    const { rows } = await this.dbQuery(query, [id, solucion_id, descripcion_solucion]);
+    const { rows } = await this.dbQuery(query, [id, solucion_id, descripcion_solucion, usuario_id || null]);
     return rows[0] || null;
+  }
+
+  async escalateTicket(id, { reason, usuario_id }) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // 1. Obtener datos del ticket original
+      const { rows: origRows } = await client.query(
+        'SELECT * FROM public.tickets WHERE id = $1 FOR UPDATE',
+        [id]
+      );
+      if (!origRows[0]) {
+        throw new Error('Ticket original no encontrado.');
+      }
+      const original = origRows[0];
+
+      // 2. Cerrar el ticket original en Soporte
+      await client.query(
+        `UPDATE public.tickets
+         SET estado_id = (SELECT id FROM public.estados_ticket WHERE LOWER(nombre) = 'cerrado' LIMIT 1),
+             escalados = false,
+             tecnico_asignado_id = COALESCE(tecnico_asignado_id, $2),
+             fecha_cierre = NOW(),
+             actualizado_en = NOW()
+         WHERE id = $1`,
+        [id, usuario_id || null]
+      );
+
+      // 3. Crear el ticket duplicado en la cola de IT Especializado
+      const insertSql = `
+        INSERT INTO public.tickets (
+          titulo, descripcion, estado_id, tipo_problema_id, centro_contacto_id,
+          solicitante_id, nombre_solicitante, extension, puesto_trabajo,
+          modalidad_trabajo, ip_vpn, registro_estado, escalados,
+          tecnico_asignado_id, creado_en, actualizado_en
+        )
+        VALUES (
+          $1, $2,
+          (SELECT id FROM public.estados_ticket WHERE LOWER(nombre) = 'escalado' LIMIT 1),
+          $3, $4, $5, $6, $7, $8, $9, $10, 'activo', true, NULL, NOW(), NOW()
+        )
+        RETURNING *
+      `;
+
+      const insertValues = [
+        original.titulo,
+        `[MOTIVO DE ESCALADO]: ${reason}\n\n[DESCRIPCIÓN ORIGINAL]: ${original.descripcion || 'Sin descripción'}`,
+        original.tipo_problema_id,
+        original.centro_contacto_id,
+        original.solicitante_id,
+        original.nombre_solicitante,
+        original.extension,
+        original.puesto_trabajo,
+        original.modalidad_trabajo,
+        original.ip_vpn,
+      ];
+
+      const { rows: createdRows } = await client.query(insertSql, insertValues);
+
+      await client.query('COMMIT');
+      return createdRows[0];
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 }

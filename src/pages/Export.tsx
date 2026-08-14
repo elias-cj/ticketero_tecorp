@@ -28,11 +28,12 @@ const Export = () => {
       const startDate = new Date(`${fechaInicio}T00:00:00`).toISOString();
       const endDate = new Date(`${fechaFin}T23:59:59`).toISOString();
 
-      // 3. Obtener tickets del rango de fechas con Paginación (para superar límite de 1000 de Supabase)
+      // 3. Obtener tickets del rango de fechas con Paginación segura
       let ticketsBrutos: any[] = [];
       let hasMore = true;
       let page = 0;
       const pageSize = 1000;
+      const MAX_EXPORT_LIMIT = 15000;
 
       while (hasMore) {
         const { data: ticketsChunk, error: errorCarga } = await supabase
@@ -64,7 +65,14 @@ const Export = () => {
         if (ticketsChunk && ticketsChunk.length > 0) {
           ticketsBrutos = [...ticketsBrutos, ...ticketsChunk];
           page++;
-          // Si trajo menos de 1000, significa que ya no hay más páginas
+
+          if (ticketsBrutos.length >= MAX_EXPORT_LIMIT) {
+            toast.warning(`Se alcanzó el tope de seguridad de ${MAX_EXPORT_LIMIT.toLocaleString()} tickets para exportación. Se procesará este lote.`);
+            hasMore = false;
+            break;
+          }
+
+          // Si trajo menos del tamaño de página, finalizó
           if (ticketsChunk.length < pageSize) {
             hasMore = false;
           }

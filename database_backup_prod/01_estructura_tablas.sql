@@ -176,3 +176,44 @@ CREATE TABLE IF NOT EXISTS public.tickets (
     descripcion_solucion TEXT
 );
 
+CREATE TABLE IF NOT EXISTS public.inventario (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    codigo TEXT,
+    nombre TEXT NOT NULL,
+    categoria TEXT,
+    numero_serie TEXT,
+    caracteristicas TEXT,
+    estado TEXT DEFAULT 'disponible',
+    asignado_a TEXT,
+    centro_contacto_id UUID REFERENCES public.call_centers(id) ON DELETE SET NULL,
+    fecha_entrega DATE DEFAULT CURRENT_DATE,
+    fecha_devolucion DATE,
+    notas TEXT,
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    actualizado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.licencias (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nombre TEXT NOT NULL,
+    clave_licencia TEXT,
+    fecha_vencimiento DATE,
+    proveedor TEXT,
+    estado TEXT DEFAULT 'activa',
+    notas TEXT,
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    actualizado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.historial_inventario (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    inventario_id UUID REFERENCES public.inventario(id) ON DELETE CASCADE,
+    responsable TEXT NOT NULL,
+    centro_contacto_id UUID REFERENCES public.call_centers(id) ON DELETE SET NULL,
+    fecha_entrega DATE DEFAULT CURRENT_DATE,
+    fecha_devolucion DATE,
+    motivo TEXT DEFAULT 'Asignación inicial',
+    creado_en TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+

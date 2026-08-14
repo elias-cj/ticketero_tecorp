@@ -8,6 +8,7 @@ import { AuthenticateUserUseCase } from '../../../use-cases/auth/AuthenticateUse
 import { CreateTicketUseCase } from '../../../use-cases/tickets/CreateTicketUseCase.js';
 import { GetTicketsPagingUseCase } from '../../../use-cases/tickets/GetTicketsPagingUseCase.js';
 import { CloseTicketUseCase } from '../../../use-cases/tickets/CloseTicketUseCase.js';
+import { EscalateTicketUseCase } from '../../../use-cases/tickets/EscalateTicketUseCase.js';
 import { AuthController } from '../../../adapters/controllers/AuthController.js';
 import { TicketController } from '../../../adapters/controllers/TicketController.js';
 import { createAuthMiddleware } from '../../middlewares/AuthMiddleware.js';
@@ -19,6 +20,9 @@ import { createGenericRoutes } from './genericRoutes.js';
 
 export function createExpressApp() {
   const app = express();
+
+  // Configuración para proxies inversos
+  app.set('trust proxy', 1);
 
   // CORS Configuration
   const isProduction = process.env.NODE_ENV === 'production';
@@ -53,12 +57,14 @@ export function createExpressApp() {
   const createTicketUseCase = new CreateTicketUseCase({ ticketRepository });
   const getTicketsPagingUseCase = new GetTicketsPagingUseCase({ ticketRepository });
   const closeTicketUseCase = new CloseTicketUseCase({ ticketRepository });
+  const escalateTicketUseCase = new EscalateTicketUseCase({ ticketRepository });
 
   const authController = new AuthController({ authenticateUserUseCase });
   const ticketController = new TicketController({
     createTicketUseCase,
     getTicketsPagingUseCase,
     closeTicketUseCase,
+    escalateTicketUseCase,
   });
 
   const authMiddleware = createAuthMiddleware({ tokenService, userRepository });

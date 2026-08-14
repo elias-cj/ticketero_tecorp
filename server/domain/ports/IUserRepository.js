@@ -14,4 +14,8 @@ export class IUserRepository {
   async getUserRolesAndPermissions(userId) {
     throw new Error('Método no implementado');
   }
+
+  async checkIsSuperAdmin(userId) {
+    throw new Error('Método no implementado');
+  }
 }

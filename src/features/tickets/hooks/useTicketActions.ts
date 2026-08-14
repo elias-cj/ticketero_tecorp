@@ -149,7 +149,7 @@ export const useTicketActions = () => {
     },
   });
 
-  // Escalar Ticket (Duplicando el registro para IT)
+  // Escalar Ticket (Atómico en backend)
   const escalateMutation = useMutation({
     mutationFn: async ({
       ticketId,
@@ -158,68 +158,37 @@ export const useTicketActions = () => {
       ticketId: string;
       reason: string;
     }) => {
-      // 1. Obtener los datos del ticket original
-      const { data: ticket, error: fetchError } = await supabase
-        .from("tickets")
-        .select("*")
-        .eq("id", ticketId)
-        .single();
-
-      if (fetchError || !ticket) {
-        throw new Error("No se pudo obtener el ticket original.");
+      const apiUrl = import.meta.env.VITE_SUPABASE_URL || 'http://127.0.0.1:3001';
+      let token = '';
+      try {
+        const stored = localStorage.getItem('auth');
+        if (stored) token = JSON.parse(stored)?.token || '';
+      } catch {
+        // fallback
       }
 
-      // 2. Determinar los IDs de estado
-      const cerradoStatusId = statusMap[TICKET_STATUSES.CERRADO];
-      const escaladoStatusId = statusMap[TICKET_STATUSES.ESCALADO];
+      const res = await fetch(`${apiUrl}/api/tickets/${ticketId}/escalate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ reason }),
+      });
 
-      if (!cerradoStatusId || !escaladoStatusId) {
-        throw new Error("No se encontraron los estados requeridos en la base de datos.");
+      if (!res.ok) {
+        const errorBody = await res.json().catch(() => ({}));
+        throw new Error(errorBody.message || 'Error al escalar el ticket.');
       }
 
-      // 4. Actualizar el ticket original (se queda en Soporte como Cerrado)
-      const { error: updateError } = await supabase
-        .from("tickets")
-        .update({
-          estado_id: cerradoStatusId,
-          escalados: false, // Se mantiene en Soporte
-          fecha_cierre: new Date().toISOString(),
-          actualizado_en: new Date().toISOString(),
-        })
-        .eq("id", ticketId);
-
-      if (updateError) throw updateError;
-
-      // 5. Insertar el ticket duplicado para IT (el trigger de BD asignará el número secuencial perfecto)
-      const { error: insertError } = await supabase
-        .from("tickets")
-        .insert({
-          titulo: ticket.titulo,
-          descripcion: `[MOTIVO DE ESCALADO]: ${reason}\n\n[DESCRIPCIÓN ORIGINAL]: ${ticket.descripcion || "Sin descripción"}`,
-          estado_id: escaladoStatusId,
-          tipo_problema_id: ticket.tipo_problema_id,
-          centro_contacto_id: ticket.centro_contacto_id,
-          solicitante_id: ticket.solicitante_id,
-          nombre_solicitante: ticket.nombre_solicitante,
-          extension: ticket.extension,
-          puesto_trabajo: ticket.puesto_trabajo,
-          modalidad_trabajo: ticket.modalidad_trabajo,
-          ip_vpn: ticket.ip_vpn,
-          registro_estado: "activo",
-          escalados: true, // Pasa a la cola de IT
-          creado_en: new Date().toISOString(),
-          actualizado_en: new Date().toISOString(),
-          tecnico_asignado_id: null, // Listo para asignar en IT
-        });
-
-      if (insertError) throw insertError;
+      return await res.json();
     },
     onSuccess: () => {
       toast.success("Ticket escalado a IT con éxito");
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tickets });
     },
     onError: (error: any) => {
-      console.error(error);
+      console.error("Error al escalar ticket:", error);
       toast.error(error.message || "Error al escalar ticket");
     },
   });

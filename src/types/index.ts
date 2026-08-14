@@ -289,10 +289,28 @@ export interface InventoryItem {
   type: string;
   nasa_code?: string;
   serial_number?: string;
+  features?: string;
   status: string;
-  location?: string;
+  call_center_id?: string;
+  call_centers?: { id: string; nombre: string; nombre_corto?: string; pais?: string };
   assigned_to?: string;
+  delivery_date?: string;
+  return_date?: string;
+  notes?: string;
   created_at?: string;
+  updated_at?: string;
+}
+
+export interface InventoryHistoryItem {
+  id: string;
+  inventario_id: string;
+  responsable: string;
+  centro_contacto_id?: string;
+  call_centers?: { id: string; nombre: string; nombre_corto?: string; pais?: string };
+  fecha_entrega: string;
+  fecha_devolucion?: string | null;
+  motivo?: string;
+  creado_en: string;
 }
 
 export interface License {

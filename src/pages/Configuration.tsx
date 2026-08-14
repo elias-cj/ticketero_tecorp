@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
+import { isSuperAdmin as checkSuperAdmin } from "@/lib/isSuperAdmin";
 
 // Configuration sections
 const TABS = [
@@ -95,7 +96,7 @@ export default function Configuration() {
   }, [fixedRoleQuery, roles, editingUser]);
 
   // Get current auth state from context
-  const isSuperAdmin = user?.role === "superadmin" || user?.role === "superadm" || user?.role === "supremo";
+  const isSuperAdmin = checkSuperAdmin(user?.role, user?.roleName);
   const isAdmin = isSuperAdmin || user?.role === "admin";
   
   const currentUser = {

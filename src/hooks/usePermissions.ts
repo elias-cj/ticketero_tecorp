@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { isSuperAdmin as checkSuperAdmin } from "@/lib/isSuperAdmin";
 
 export interface PermissionsResult {
   canView: boolean;
@@ -13,17 +14,10 @@ export interface PermissionsResult {
 
 export const usePermissions = (moduleName: string): PermissionsResult => {
   const { user } = useAuth();
-
-  const userRole = (user?.role || "").toLowerCase();
-  const roleName = (user?.roleName || "").toLowerCase();
   const permissions = user?.permissions || {};
 
   // Únicamente el perfil raíz "Administrador Supremo" tiene bypass total
-  const isSuperAdmin =
-    userRole === "superadmin" ||
-    userRole === "superadm" ||
-    roleName === "administrador supremo" ||
-    roleName === "supremo";
+  const isSuperAdmin = checkSuperAdmin(user?.role, user?.roleName);
 
   return useMemo(() => {
     const hasAction = (action: string): boolean => {

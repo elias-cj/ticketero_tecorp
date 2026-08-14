@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { isSuperAdmin as checkSuperAdmin } from '@/lib/isSuperAdmin';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
@@ -13,11 +14,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRoles
   const { isAuthenticated, user, isLoading } = useAuth();
   const location = useLocation();
 
-  const userRole = (user?.role || "").toLowerCase();
-  const roleName = (user?.roleName || "").toLowerCase();
-  
   // SOLAMENTE el Administrador Supremo (Superadmin raíz) tiene bypass total de permisos
-  const isSuperAdmin = userRole === "superadmin" || userRole === "superadm" || roleName === "administrador supremo" || roleName === "supremo";
+  const isSuperAdmin = checkSuperAdmin(user?.role, user?.roleName);
 
   // Fallback check for localStorage to prevent "login bounce"
   const hasSavedAuth = localStorage.getItem('auth') !== null;

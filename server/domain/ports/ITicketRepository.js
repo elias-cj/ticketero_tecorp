@@ -22,4 +22,8 @@ export class ITicketRepository {
   async closeTicket(id, { solucion_id, descripcion_solucion, usuario_id }) {
     throw new Error('Método no implementado');
   }
+
+  async escalateTicket(id, { reason, usuario_id }) {
+    throw new Error('Método no implementado');
+  }
 }

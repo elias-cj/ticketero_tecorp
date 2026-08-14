@@ -8,7 +8,10 @@ export class PgUserRepository extends IUserRepository {
 
   async findByEmail(email) {
     const { rows } = await this.dbQuery(
-      'SELECT * FROM public.usuarios WHERE email = $1 AND esta_activo = TRUE LIMIT 1',
+      `SELECT id, nombre_completo, email, password, esta_activo, debe_cambiar_password, url_avatar, telefono, creado_en 
+       FROM public.usuarios 
+       WHERE email = $1 AND esta_activo = TRUE 
+       LIMIT 1`,
       [email.toLowerCase().trim()]
     );
     return rows[0] || null;
@@ -67,7 +70,7 @@ export class PgUserRepository extends IUserRepository {
         JOIN public.roles r ON r.id = ru.rol_id
         WHERE ru.usuario_id = $1
           AND r.esta_activo = TRUE
-          AND LOWER(r.nombre) IN ('administrador supremo', 'superadmin', 'superadm')
+          AND LOWER(TRIM(r.nombre)) IN ('administrador supremo', 'superadmin', 'superadm', 'supremo')
       ) AS is_super_admin
     `,
       [userId]

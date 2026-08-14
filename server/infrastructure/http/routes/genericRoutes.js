@@ -1,18 +1,69 @@
 import { Router } from 'express';
 import { dbQuery } from '../../database/db.js';
 import { GetUserPermissionsUseCase } from '../../../use-cases/permissions/GetUserPermissionsUseCase.js';
+import { clearUserCache } from '../../middlewares/AuthMiddleware.js';
 
 const ALLOWED_TABLES = new Set([
   'tickets', 'tareas', 'asignados_tarea', 'horarios', 'turnos', 'usuarios',
   'detalles_tecnico', 'roles_usuario', 'roles', 'permisos', 'permisos_rol',
   'modulos', 'acciones', 'call_centers', 'tipos_problema', 'categorias_problema',
-  'estados_ticket', 'prioridades_ticket', 'soluciones', 'inventario', 'licencias',
+  'estados_ticket', 'prioridades_ticket', 'soluciones', 'inventario', 'historial_inventario', 'licencias',
   'informacion_empresa', 'registros_auditoria', 'logs_auditoria', 'faqs'
 ]);
 
 const PUBLIC_TABLES = new Set([
   'call_centers', 'tipos_problema', 'categorias_problema', 'estados_ticket',
   'prioridades_ticket', 'informacion_empresa', 'faqs'
+]);
+
+const ALLOWED_RPC = new Set([
+  'login_seguro',
+  'obtener_permisos_usuario',
+  'obtener_metricas_dashboard',
+  'cambiar_password_seguro',
+]);
+
+const TABLE_MODULE_MAP = {
+  tickets: 'Tickets',
+  tareas: 'Tareas',
+  horarios: 'Horarios',
+  usuarios: 'Usuarios',
+  inventario: 'Inventario',
+  historial_inventario: 'Inventario',
+  licencias: 'Licencias',
+  soluciones: 'Soluciones',
+  tipos_problema: 'Tipos de Problema',
+  categorias_problema: 'Tipos de Problema',
+  call_centers: 'Call Centers',
+  faqs: 'Configuración',
+  informacion_empresa: 'Configuración',
+  turnos: 'Horarios',
+  detalles_tecnico: 'Usuarios',
+  asignados_tarea: 'Tareas',
+  registros_auditoria: 'Configuración',
+  logs_auditoria: 'Configuración',
+  estados_ticket: 'Configuración',
+  prioridades_ticket: 'Configuración',
+  // Tablas críticas de seguridad: exclusivas para SuperAdmin
+  roles: '__SUPER_ADMIN__',
+  roles_usuario: '__SUPER_ADMIN__',
+  permisos: '__SUPER_ADMIN__',
+  permisos_rol: '__SUPER_ADMIN__',
+  modulos: '__SUPER_ADMIN__',
+  acciones: '__SUPER_ADMIN__',
+};
+
+const METHOD_ACTION_MAP = {
+  GET: 'VER',
+  POST: 'CREAR',
+  PATCH: 'EDITAR',
+  DELETE: 'ELIMINAR',
+};
+
+const ALLOWED_PUBLIC_TICKET_FIELDS = new Set([
+  'nombre_solicitante', 'puesto_trabajo', 'centro_contacto_id', 'tipo_problema_id',
+  'descripcion', 'cantidad_afectados', 'modalidad_trabajo', 'extension',
+  'ip_vpn', 'estado_id', 'registro_estado', 'titulo', 'prioridad_id'
 ]);
 
 export function createGenericRoutes({ authMiddleware, tokenService }) {
@@ -23,6 +74,10 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
 
   const handleRpc = async (req, res) => {
     const fnName = req.params.fn;
+
+    if (!ALLOWED_RPC.has(fnName)) {
+      return res.status(403).json({ message: 'Procedimiento almacenado no permitido.' });
+    }
 
     // Intercept: RPC manejado directamente en el servidor (no PL/pgSQL)
     if (fnName === 'obtener_permisos_usuario') {
@@ -35,12 +90,22 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
         return res.json(result);
       } catch (error) {
         console.error('Error al obtener permisos:', error.message);
-        return res.status(400).json({ message: error.message });
+        return res.status(400).json({ message: 'Error al consultar permisos de usuario.' });
       }
     }
 
-    if (!/^[a-z_][a-z0-9_]*$/.test(fnName)) {
-      return res.status(400).json({ message: 'Procedimiento almacenado no válido.' });
+    // Seguridad en cambio de contraseña: sólo el propio usuario o SuperAdmin
+    if (fnName === 'cambiar_password_seguro') {
+      const requestedUserId = req.body?.p_user_id;
+      const authenticatedUserId = req.user?.id;
+
+      if (!authenticatedUserId) {
+        return res.status(401).json({ message: 'Autenticación requerida para cambio de contraseña.' });
+      }
+
+      if (!req.user?.is_super_admin && requestedUserId !== authenticatedUserId) {
+        return res.status(403).json({ message: 'No tienes autorización para cambiar la contraseña de otro usuario.' });
+      }
     }
 
     try {
@@ -73,7 +138,7 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
       return res.json(rawResult);
     } catch (error) {
       console.error(`Error al ejecutar RPC ${fnName}:`, error.message);
-      return res.status(400).json({ message: error.message || 'Error al ejecutar procedimiento.' });
+      return res.status(400).json({ message: 'Error al ejecutar el procedimiento solicitado.' });
     }
   };
 
@@ -87,14 +152,64 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
   router.post('/rest/v1/rpc/:fn', rpcAuthCheck, handleRpc);
   router.post('/rpc/:fn', rpcAuthCheck, handleRpc);
 
-  // ── Auth check para tablas ────────────────────────────────────────────────────
+  // ── Auth check para tablas con RBAC ──────────────────────────────────────────
 
   const checkTableAuth = (req, res, next) => {
     const table = req.params.table;
+    
+    // Lectura pública para catálogos
     if (PUBLIC_TABLES.has(table) && req.method === 'GET') {
       req.isPublicEndpoint = true;
     }
-    return authMiddleware(req, res, next);
+
+    // Creación pública permitida exclusivamente para tickets
+    if (table === 'tickets' && req.method === 'POST') {
+      req.isPublicEndpoint = true;
+    }
+
+    return authMiddleware(req, res, () => {
+      // Si fue endpoint público y no hay usuario autenticado (ej. GET catálogo o POST ticket anónimo), continuar
+      if (req.isPublicEndpoint && !req.user) {
+        return next();
+      }
+
+      // Si hay usuario autenticado, validar permisos
+      if (req.user) {
+        if (req.user.is_super_admin) {
+          return next();
+        }
+
+        const module = TABLE_MODULE_MAP[table];
+        const action = METHOD_ACTION_MAP[req.method];
+
+        // Tablas críticas de seguridad: mutaciones (POST/PATCH/DELETE) exclusivas de SuperAdmin, lectura permitida con VER en Usuarios/Configuración
+        if (module === '__SUPER_ADMIN__') {
+          if (req.method === 'GET') {
+            const hasReadPerm = Boolean(
+              req.user.permissions?.['Configuración']?.includes('VER') ||
+              req.user.permissions?.['Usuarios']?.includes('VER')
+            );
+            if (hasReadPerm) return next();
+          }
+          return res.status(403).json({
+            code: 'FORBIDDEN',
+            message: 'Acceso restringido exclusivamente a Administradores Supremos.',
+          });
+        }
+
+        if (module && action) {
+          const userActions = req.user.permissions?.[module];
+          if (!userActions || !userActions.includes(action)) {
+            return res.status(403).json({
+              code: 'FORBIDDEN',
+              message: `Permisos insuficientes: se requiere permiso de ${action} en módulo ${module}.`,
+            });
+          }
+        }
+      }
+
+      return next();
+    });
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -279,7 +394,7 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
       return res.json(rows);
     } catch (error) {
       console.error(`Error al consultar tabla ${table}:`, error.message);
-      return res.status(400).json({ message: error.message });
+      return res.status(400).json({ message: 'Error al consultar los registros.' });
     }
   };
 
@@ -292,8 +407,22 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
     }
 
     try {
-      const rows = Array.isArray(req.body) ? req.body : [req.body];
-      if (rows.length === 0) return res.status(400).json({ message: 'Cuerpo vacío.' });
+      const rawRows = Array.isArray(req.body) ? req.body : [req.body];
+      if (rawRows.length === 0) return res.status(400).json({ message: 'Cuerpo vacío.' });
+
+      // Si es creación pública de tickets, sanitizar campos permitidos
+      const rows = rawRows.map(row => {
+        if (table === 'tickets' && !req.user) {
+          const sanitized = {};
+          for (const key of Object.keys(row)) {
+            if (ALLOWED_PUBLIC_TICKET_FIELDS.has(key) && /^[a-z_][a-z0-9_]*$/.test(key)) {
+              sanitized[key] = row[key];
+            }
+          }
+          return sanitized;
+        }
+        return row;
+      });
 
       const allResults = [];
       for (const row of rows) {
@@ -309,10 +438,14 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
         allResults.push(...inserted);
       }
 
+      if (['roles', 'roles_usuario', 'permisos', 'permisos_rol', 'usuarios'].includes(table)) {
+        clearUserCache();
+      }
+
       return res.status(201).json(allResults);
     } catch (error) {
       console.error(`Error al insertar en ${table}:`, error.message);
-      return res.status(400).json({ message: error.message });
+      return res.status(400).json({ message: 'Error al registrar la información.' });
     }
   };
 
@@ -349,10 +482,15 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
 
       const sql = `UPDATE public."${table}" SET ${setClauses.join(', ')} WHERE ${reindexedWhere.join(' AND ')} RETURNING *`;
       const { rows } = await dbQuery(sql, values);
+
+      if (['roles', 'roles_usuario', 'permisos', 'permisos_rol', 'usuarios'].includes(table)) {
+        clearUserCache();
+      }
+
       return res.json(rows);
     } catch (error) {
       console.error(`Error al actualizar ${table}:`, error.message);
-      return res.status(400).json({ message: error.message });
+      return res.status(400).json({ message: 'Error al actualizar el registro.' });
     }
   };
 
@@ -372,10 +510,15 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
 
       const sql = `DELETE FROM public."${table}" WHERE ${whereClauses.join(' AND ')} RETURNING *`;
       const { rows } = await dbQuery(sql, values);
+
+      if (['roles', 'roles_usuario', 'permisos', 'permisos_rol', 'usuarios'].includes(table)) {
+        clearUserCache();
+      }
+
       return res.status(200).json(rows);
     } catch (error) {
       console.error(`Error al eliminar en ${table}:`, error.message);
-      return res.status(400).json({ message: error.message });
+      return res.status(400).json({ message: 'Error al eliminar el registro.' });
     }
   };
 

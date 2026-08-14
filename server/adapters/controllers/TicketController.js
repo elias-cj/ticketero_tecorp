@@ -1,8 +1,9 @@
 export class TicketController {
-  constructor({ createTicketUseCase, getTicketsPagingUseCase, closeTicketUseCase }) {
+  constructor({ createTicketUseCase, getTicketsPagingUseCase, closeTicketUseCase, escalateTicketUseCase }) {
     this.createTicketUseCase = createTicketUseCase;
     this.getTicketsPagingUseCase = getTicketsPagingUseCase;
     this.closeTicketUseCase = closeTicketUseCase;
+    this.escalateTicketUseCase = escalateTicketUseCase;
   }
 
   async getTickets(req, res, next) {
@@ -21,7 +22,10 @@ export class TicketController {
         order,
       });
 
-      return res.json(result.data); // Mantiene compatibilidad con el array devuelto si la app espera array
+      return res.json({
+        data: result.data,
+        pagination: result.pagination,
+      });
     } catch (error) {
       next(error);
     }
@@ -50,6 +54,24 @@ export class TicketController {
       });
 
       return res.json(updated);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async escalateTicket(req, res, next) {
+    try {
+      const { ticketId } = req.params;
+      const { reason } = req.body;
+      const usuario_id = req.user?.id;
+
+      const escalated = await this.escalateTicketUseCase.execute({
+        ticketId,
+        reason,
+        usuario_id,
+      });
+
+      return res.status(201).json(escalated);
     } catch (error) {
       next(error);
     }

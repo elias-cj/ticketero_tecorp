@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import ThemeToggle from "@/components/ThemeToggle";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { isSuperAdmin } from "@/lib/isSuperAdmin";
 
 type Step = "credentials" | "role-select";
 
@@ -234,8 +235,8 @@ const Login = () => {
 };
 
 function mapRoleName(name: string): string {
+  if (isSuperAdmin(name, name)) return "superadmin";
   const n = name.toLowerCase().trim();
-  if (n === "administrador supremo" || n === "superadmin" || n === "superadm" || n === "supremo") return "superadmin";
   if (n === "administrador" || n === "admin") return "admin";
   if (n === "it" || n === "it especializado") return "it";
   if (n === "bi") return "bi";

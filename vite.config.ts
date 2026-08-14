@@ -18,4 +18,17 @@ export default defineConfig(() => ({
     },
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-react": ["react", "react-dom", "react-router-dom", "@tanstack/react-query"],
+          "vendor-ui": ["framer-motion", "lucide-react"],
+          "vendor-excel": ["xlsx"],
+          "vendor-charts": ["recharts"],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
 }));
