@@ -1,0 +1,62 @@
+services:
+  # 1. Base de Datos PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    container_name: supportconnect-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-ticketero_tecorp}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Memo_13031995}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-ticketero_tecorp}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - supportconnect-net
+
+  # 2. Servidor Backend Node.js Express (Clean Architecture)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: supportconnect-backend
+    restart: unless-stopped
+    environment:
+      PORT: 3001
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-Memo_13031995}@postgres:5432/${DB_NAME:-ticketero_tecorp}
+      JWT_SECRET: ${JWT_SECRET:-support_connect_jwt_secret_key_2026_super_secure}
+      CLIENT_ORIGINS: ${CLIENT_ORIGINS:-*}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - supportconnect-net
+
+  # 3. Servidor Web Nginx + Frontend Compilado (SPA)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: supportconnect-frontend
+    restart: unless-stopped
+    ports:
+      - "${PORT_HTTP:-80}:80"
+    depends_on:
+      - backend
+    networks:
+      - supportconnect-net
+
+networks:
+  supportconnect-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

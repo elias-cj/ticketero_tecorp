@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'http://127.0.0.1:3001';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://127.0.0.1:3001');
 // Este identificador solo satisface el contrato del cliente. La API no lo usa para autorizar.
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'public-client-id';
 

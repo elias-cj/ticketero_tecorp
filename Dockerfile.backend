@@ -1,0 +1,22 @@
+# =============================================================================
+# Backend API Node.js (Clean Architecture)
+# =============================================================================
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Instalar dependencias solo para producción
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# Copiar el código del backend y el punto de entrada
+COPY server/ ./server/
+COPY server.js ./
+
+ENV NODE_ENV=production
+ENV PORT=3001
+
+EXPOSE 3001
+
+# Iniciar servidor Node.js
+CMD ["node", "server.js"]

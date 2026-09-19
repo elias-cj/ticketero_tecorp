@@ -158,7 +158,7 @@ export const useTicketActions = () => {
       ticketId: string;
       reason: string;
     }) => {
-      const apiUrl = import.meta.env.VITE_SUPABASE_URL || 'http://127.0.0.1:3001';
+      const apiUrl = import.meta.env.VITE_SUPABASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://127.0.0.1:3001');
       let token = '';
       try {
         const stored = localStorage.getItem('auth');
