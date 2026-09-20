@@ -37,7 +37,7 @@ export function createExpressApp() {
 
   app.use(cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || !isProduction) {
+      if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin) || !isProduction) {
         return callback(null, true);
       }
       return callback(new Error('Acceso no permitido por política CORS'));
