@@ -235,8 +235,17 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
 
     for (const [key, val] of entries) {
       if (val.startsWith('eq.')) {
-        values.push(val.slice(3));
-        whereClauses.push(`"${key}" = $${values.length}`);
+        const raw = val.slice(3);
+        if (raw === 'true') {
+          values.push(true);
+          whereClauses.push(`"${key}" = $${values.length}`);
+        } else if (raw === 'false') {
+          values.push(false);
+          whereClauses.push(`("${key}" = $${values.length} OR "${key}" IS NULL)`);
+        } else {
+          values.push(raw);
+          whereClauses.push(`"${key}" = $${values.length}`);
+        }
       } else if (val.startsWith('neq.')) {
         values.push(val.slice(4));
         whereClauses.push(`"${key}" != $${values.length}`);
@@ -297,7 +306,7 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
           SELECT t.*,
             (SELECT row_to_json(st.*) FROM (SELECT nombre FROM public.estados_ticket WHERE id = t.estado_id) st) AS estados_ticket,
             (SELECT row_to_json(tp.*) FROM (SELECT nombre FROM public.tipos_problema WHERE id = t.tipo_problema_id) tp) AS tipos_problema,
-            (SELECT row_to_json(cc.*) FROM (SELECT id, nombre, codigo, pais FROM public.call_centers WHERE id = t.centro_contacto_id) cc) AS call_centers,
+            (SELECT row_to_json(cc.*) FROM (SELECT id, nombre, codigo, pais, nombre_corto, codigo_telefono, color_bandera FROM public.call_centers WHERE id = t.centro_contacto_id) cc) AS call_centers,
             (SELECT row_to_json(u.*) FROM (SELECT nombre_completo, telefono FROM public.usuarios WHERE id = t.solicitante_id) u) AS solicitante,
             (SELECT row_to_json(u2.*) FROM (SELECT nombre_completo, telefono FROM public.usuarios WHERE id = t.tecnico_asignado_id) u2) AS tecnico,
             (SELECT row_to_json(u2.*) FROM (SELECT nombre_completo, telefono FROM public.usuarios WHERE id = t.tecnico_asignado_id) u2) AS tecnico_asignado,
@@ -382,15 +391,39 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
       const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
       const orderSql = parseOrder(req.query.order);
 
+      const baseQuery = getSelectQuery(table);
+
+      // Soporte exacto para conteo PostgREST ({ count: 'exact' } o HEAD)
+      const isHead = req.method === 'HEAD';
+      const wantsCount = isHead || (typeof req.headers['prefer'] === 'string' && req.headers['prefer'].includes('count=exact'));
+
+      let total = null;
+      if (wantsCount) {
+        const countSql = `SELECT COUNT(*)::int AS total FROM (${baseQuery}) sub ${whereSql}`;
+        const countRes = await dbQuery(countSql, [...values]);
+        total = countRes.rows[0]?.total ?? 0;
+      }
+
       values.push(limit);
       const limitIdx = values.length;
       values.push(offset);
       const offsetIdx = values.length;
 
-      const baseQuery = getSelectQuery(table);
       const querySql = `SELECT sub.* FROM (${baseQuery}) sub ${whereSql} ${orderSql} LIMIT $${limitIdx} OFFSET $${offsetIdx}`;
 
       const { rows } = await dbQuery(querySql, values);
+
+      if (total !== null) {
+        const start = offset;
+        const end = Math.max(start, start + rows.length - 1);
+        res.set('Content-Range', rows.length > 0 ? `${start}-${end}/${total}` : `*/${total}`);
+        res.set('Range-Unit', 'items');
+      }
+
+      if (isHead) {
+        return res.status(200).end();
+      }
+
       return res.json(rows);
     } catch (error) {
       console.error(`Error al consultar tabla ${table}:`, error.message);
@@ -410,8 +443,9 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
       const rawRows = Array.isArray(req.body) ? req.body : [req.body];
       if (rawRows.length === 0) return res.status(400).json({ message: 'Cuerpo vacío.' });
 
-      // Si es creación pública de tickets, sanitizar campos permitidos
+      // Si es creación de tickets, sanitizar campos públicos y garantizar estado_id Abierto por defecto
       const rows = rawRows.map(row => {
+        let processed = { ...row };
         if (table === 'tickets' && !req.user) {
           const sanitized = {};
           for (const key of Object.keys(row)) {
@@ -419,9 +453,12 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
               sanitized[key] = row[key];
             }
           }
-          return sanitized;
+          processed = sanitized;
         }
-        return row;
+        if (table === 'tickets' && !processed.estado_id) {
+          processed.estado_id = '6c8a9009-475b-49cd-b4a0-e5497ee790c0';
+        }
+        return processed;
       });
 
       const allResults = [];

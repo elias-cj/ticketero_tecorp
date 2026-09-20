@@ -43,6 +43,7 @@ export function createExpressApp() {
       return callback(new Error('Acceso no permitido por política CORS'));
     },
     credentials: true,
+    exposedHeaders: ['Content-Range', 'Range-Unit', 'Range', 'Preference-Applied'],
   }));
 
   app.use(express.json({ limit: '2mb' }));

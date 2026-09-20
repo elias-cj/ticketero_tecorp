@@ -125,8 +125,31 @@ const CreateTicket = () => {
     isSubmittingRef.current = true;
     setIsSubmitting(true);
     try {
-      // 1. Obtener ID del estado 'Abierto'
-      const openStatusId = statusMap[TICKET_STATUSES.ABIERTO];
+      // 1. Obtener ID del estado 'Abierto' de forma garantizada
+      let openStatusId = statusMap[TICKET_STATUSES.ABIERTO];
+      if (!openStatusId) {
+        const match = Object.entries(statusMap).find(
+          ([k]) => k.trim().toLowerCase() === "abierto"
+        );
+        if (match) openStatusId = match[1];
+      }
+      if (!openStatusId) {
+        try {
+          const { data: stRows } = await supabase
+            .from("estados_ticket")
+            .select("id, nombre")
+            .ilike("nombre", "abierto")
+            .limit(1);
+          if (stRows && stRows[0]) {
+            openStatusId = stRows[0].id;
+          }
+        } catch {
+          // Fallback al UUID maestro estándar
+        }
+      }
+      if (!openStatusId) {
+        openStatusId = "6c8a9009-475b-49cd-b4a0-e5497ee790c0";
+      }
 
       // Mapear cantidad de afectados por número / rango a prioridad interna
       const getPriorityNameFromScope = (scopeVal: string): string => {
