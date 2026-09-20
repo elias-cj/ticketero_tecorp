@@ -2,7 +2,6 @@
 -- PostgreSQL database dump
 --
 
-\restrict gDyvY2PthR2kbkxDbsc9ZaZAadqgoeb55lbQheDiZDe5WBVwrTj3nm3wpfF0o4X
 
 -- Dumped from database version 18.4
 -- Dumped by pg_dump version 18.4
@@ -12,7 +11,6 @@
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
-SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -1377,5 +1375,4 @@ ALTER TABLE ONLY public.tipos_problema
 -- PostgreSQL database dump complete
 --
 
-\unrestrict gDyvY2PthR2kbkxDbsc9ZaZAadqgoeb55lbQheDiZDe5WBVwrTj3nm3wpfF0o4X
 
