@@ -65,7 +65,7 @@ export default function Configuration() {
       setActiveTab("usuarios");
       const targetRoleStr = params.get("role");
       setFixedRoleQuery(targetRoleStr);
-      setEditingUser({ isNew: true });
+      setEditingUser({ id: 'new', isNew: true });
       setUserFormData({ 
         nombre_completo: "", 
         email: "", 
@@ -468,19 +468,24 @@ export default function Configuration() {
         }
         const { data, error } = await supabase.from('usuarios').insert(userData).select().single();
         if (error) throw error;
-        userId = data.id;
+        userId = (data as any)?.id || (Array.isArray(data) ? (data as any)[0]?.id : undefined);
       } else {
         const { error } = await supabase.from('usuarios').update(userData).eq('id', userId);
         if (error) throw error;
       }
 
+      if (!userId) {
+        throw new Error("No se pudo obtener el identificador del usuario registrado.");
+      }
+
       // Sync Roles
       await supabase.from('roles_usuario').delete().eq('usuario_id', userId);
       if (userFormData.roles.length > 0) {
+        const currentUserId = user?.id || (user as any)?.userId || null;
         const rolePayload = userFormData.roles.map(rId => ({
           usuario_id: userId,
           rol_id: rId,
-          asignado_por: user?.userId || null
+          asignado_por: currentUserId
         }));
         const { error: roleError } = await supabase.from('roles_usuario').insert(rolePayload);
         if (roleError) throw roleError;

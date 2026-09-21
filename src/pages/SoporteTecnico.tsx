@@ -163,18 +163,21 @@ const SoporteTecnico = () => {
         esta_activo: true
       }).select().single();
 
-      if (userError || !newUser) {
+      const createdUserId = (newUser as any)?.id || (Array.isArray(newUser) ? (newUser as any)[0]?.id : undefined);
+
+      if (userError || !createdUserId) {
         console.error(userError);
         return toast.error('Error al crear cuenta de usuario');
       }
 
       // Sincronizar Rol
       const { data: roleData } = await supabase.from('roles').select('id').ilike('nombre', '%soporte%').single();
-      if (roleData) {
+      const roleId = (roleData as any)?.id || (Array.isArray(roleData) ? (roleData as any)[0]?.id : undefined);
+      if (roleId) {
         await supabase.from('roles_usuario').insert({
-          usuario_id: newUser.id,
-          rol_id: roleData.id,
-          asignado_por: user?.userId || null
+          usuario_id: createdUserId,
+          rol_id: roleId,
+          asignado_por: user?.id || (user as any)?.userId || null
         });
       }
 

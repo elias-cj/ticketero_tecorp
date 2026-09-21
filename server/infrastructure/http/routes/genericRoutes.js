@@ -236,7 +236,9 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
     for (const [key, val] of entries) {
       if (val.startsWith('eq.')) {
         const raw = val.slice(3);
-        if (raw === 'true') {
+        if (raw === 'undefined' || raw === 'null') {
+          whereClauses.push(`"${key}" IS NULL`);
+        } else if (raw === 'true') {
           values.push(true);
           whereClauses.push(`"${key}" = $${values.length}`);
         } else if (raw === 'false') {
@@ -247,8 +249,13 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
           whereClauses.push(`"${key}" = $${values.length}`);
         }
       } else if (val.startsWith('neq.')) {
-        values.push(val.slice(4));
-        whereClauses.push(`"${key}" != $${values.length}`);
+        const raw = val.slice(4);
+        if (raw === 'undefined' || raw === 'null') {
+          whereClauses.push(`"${key}" IS NOT NULL`);
+        } else {
+          values.push(raw);
+          whereClauses.push(`"${key}" != $${values.length}`);
+        }
       } else if (val.startsWith('ilike.')) {
         values.push(val.slice(6));
         whereClauses.push(`"${key}" ILIKE $${values.length}`);
@@ -424,6 +431,11 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
         return res.status(200).end();
       }
 
+      const isSingle = typeof req.headers['accept'] === 'string' && req.headers['accept'].includes('vnd.pgrst.object+json');
+      if (isSingle) {
+        return res.json(rows[0] || null);
+      }
+
       return res.json(rows);
     } catch (error) {
       console.error(`Error al consultar tabla ${table}:`, error.message);
@@ -479,6 +491,11 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
         clearUserCache();
       }
 
+      const isSingle = typeof req.headers['accept'] === 'string' && req.headers['accept'].includes('vnd.pgrst.object+json');
+      if (isSingle) {
+        return res.status(201).json(allResults[0] || null);
+      }
+
       return res.status(201).json(allResults);
     } catch (error) {
       console.error(`Error al insertar en ${table}:`, error.message);
@@ -522,6 +539,11 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
 
       if (['roles', 'roles_usuario', 'permisos', 'permisos_rol', 'usuarios'].includes(table)) {
         clearUserCache();
+      }
+
+      const isSingle = typeof req.headers['accept'] === 'string' && req.headers['accept'].includes('vnd.pgrst.object+json');
+      if (isSingle) {
+        return res.json(rows[0] || null);
       }
 
       return res.json(rows);

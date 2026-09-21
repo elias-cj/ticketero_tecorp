@@ -166,7 +166,9 @@ const ITEspecializado = () => {
         esta_activo: true
       }).select().single();
 
-      if (userError || !newUser) {
+      const createdUserId = (newUser as any)?.id || (Array.isArray(newUser) ? (newUser as any)[0]?.id : undefined);
+
+      if (userError || !createdUserId) {
         console.error(userError);
         setIsSaving(false);
         return toast.error('Error al crear cuenta de usuario');
@@ -175,15 +177,15 @@ const ITEspecializado = () => {
       // Sincronizar Rol
       const { data: rolesData } = await supabase.from('roles').select('id, nombre');
       if (rolesData) {
-        const itRole = rolesData.find(r => {
-          const n = r.nombre.toLowerCase().trim();
+        const itRole = (Array.isArray(rolesData) ? rolesData : [rolesData]).find(r => {
+          const n = (r.nombre || '').toLowerCase().trim();
           return n === 'it' || n.includes('especializado') || n.includes('it especializado');
         });
         if (itRole) {
           await supabase.from('roles_usuario').insert({
-            usuario_id: newUser.id,
+            usuario_id: createdUserId,
             rol_id: itRole.id,
-            asignado_por: user?.userId || null
+            asignado_por: user?.id || (user as any)?.userId || null
           });
         }
       }
