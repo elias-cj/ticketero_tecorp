@@ -92,6 +92,13 @@ CREATE FUNCTION public.generar_numero_ticket_auto() RETURNS trigger
         v_max_num INT;
         v_prefix TEXT;
       BEGIN
+        IF NEW.estado_id IS NULL THEN
+          NEW.estado_id := COALESCE(
+            (SELECT id FROM public.estados_ticket WHERE lower(trim(nombre)) = 'abierto' LIMIT 1),
+            '6c8a9009-475b-49cd-b4a0-e5497ee790c0'::uuid
+          );
+        END IF;
+
         IF NEW.numero_ticket IS NULL OR NEW.numero_ticket = '' THEN
           v_prefix := CASE WHEN NEW.escalados IS TRUE THEN 'TCKIT-' ELSE 'TCK-' END;
           
@@ -102,7 +109,7 @@ CREATE FUNCTION public.generar_numero_ticket_auto() RETURNS trigger
                 ''
               )::INT
             ), 
-            10000
+            0
           )
           INTO v_max_num
           FROM public.tickets;
@@ -677,7 +684,7 @@ CREATE TABLE public.tickets (
     numero_ticket text NOT NULL,
     titulo text NOT NULL,
     descripcion text,
-    estado_id uuid,
+    estado_id uuid DEFAULT '6c8a9009-475b-49cd-b4a0-e5497ee790c0'::uuid,
     tipo_problema_id uuid,
     solucion_id uuid,
     centro_contacto_id uuid,

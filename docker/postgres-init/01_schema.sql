@@ -107,7 +107,7 @@ CREATE FUNCTION public.generar_numero_ticket_auto() RETURNS trigger
                 ''
               )::INT
             ), 
-            10000
+            0
           )
           INTO v_max_num
           FROM public.tickets;

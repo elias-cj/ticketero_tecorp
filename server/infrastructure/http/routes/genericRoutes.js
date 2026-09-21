@@ -455,7 +455,7 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
           }
           processed = sanitized;
         }
-        if (table === 'tickets' && !processed.estado_id) {
+        if (table === 'tickets' && (!processed.estado_id || String(processed.estado_id).trim() === '' || processed.estado_id === 'null')) {
           processed.estado_id = '6c8a9009-475b-49cd-b4a0-e5497ee790c0';
         }
         return processed;
