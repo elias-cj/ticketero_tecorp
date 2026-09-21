@@ -8,12 +8,13 @@ const ALLOWED_TABLES = new Set([
   'detalles_tecnico', 'roles_usuario', 'roles', 'permisos', 'permisos_rol',
   'modulos', 'acciones', 'call_centers', 'tipos_problema', 'categorias_problema',
   'estados_ticket', 'prioridades_ticket', 'soluciones', 'inventario', 'historial_inventario', 'licencias',
-  'informacion_empresa', 'registros_auditoria', 'logs_auditoria', 'faqs'
+  'informacion_empresa', 'registros_auditoria', 'logs_auditoria', 'faqs',
+  'politicas_asignacion_tickets'
 ]);
 
 const PUBLIC_TABLES = new Set([
   'call_centers', 'tipos_problema', 'categorias_problema', 'estados_ticket',
-  'prioridades_ticket', 'informacion_empresa', 'faqs'
+  'prioridades_ticket', 'informacion_empresa', 'faqs', 'politicas_asignacion_tickets'
 ]);
 
 const ALLOWED_RPC = new Set([
@@ -37,6 +38,7 @@ const TABLE_MODULE_MAP = {
   call_centers: 'Call Centers',
   faqs: 'Configuración',
   informacion_empresa: 'Configuración',
+  politicas_asignacion_tickets: 'Configuración',
   turnos: 'Horarios',
   detalles_tecnico: 'Usuarios',
   asignados_tarea: 'Tareas',
@@ -168,6 +170,11 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
     }
 
     return authMiddleware(req, res, () => {
+      // Si el endpoint es de lectura sobre una tabla pública, permitir a todos (autenticados o anónimos)
+      if (req.isPublicEndpoint && req.method === 'GET') {
+        return next();
+      }
+
       // Si fue endpoint público y no hay usuario autenticado (ej. POST ticket anónimo), continuar
       if (req.isPublicEndpoint && !req.user) {
         return next();
@@ -179,10 +186,19 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
           return next();
         }
 
-        // Permitir que cualquier usuario autenticado consulte su propio estado_activo en tabla usuarios
+        // Permitir que cualquier usuario autenticado consulte su propio estado_activo en tabla usuarios,
+        // o que usuarios con permisos operativos en Tickets, Tareas, Horarios o Usuarios lean la lista de usuarios (GET)
         if (table === 'usuarios' && req.method === 'GET') {
           const isSelfCheck = req.query.id === `eq.${req.user.id}` || req.query.id === `eq.${req.user.userId}`;
-          if (isSelfCheck) {
+          const hasOperationalRead = Boolean(
+            req.user.permissions?.['Tickets']?.includes('VER') ||
+            req.user.permissions?.['Tickets']?.includes('EDITAR') ||
+            req.user.permissions?.['Tareas']?.includes('VER') ||
+            req.user.permissions?.['Horarios']?.includes('VER') ||
+            req.user.permissions?.['Usuarios']?.includes('VER') ||
+            req.user.permissions?.['Configuración']?.includes('VER')
+          );
+          if (isSelfCheck || hasOperationalRead) {
             return next();
           }
         }
@@ -190,12 +206,14 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
         const module = TABLE_MODULE_MAP[table];
         const action = METHOD_ACTION_MAP[req.method];
 
-        // Tablas críticas de seguridad: mutaciones (POST/PATCH/DELETE) exclusivas de SuperAdmin, lectura permitida con VER en Usuarios/Configuración
+        // Tablas críticas de seguridad: mutaciones (POST/PATCH/DELETE) exclusivas de SuperAdmin, lectura permitida con VER en Usuarios/Configuración/Tickets
         if (module === '__SUPER_ADMIN__') {
           if (req.method === 'GET') {
             const hasReadPerm = Boolean(
               req.user.permissions?.['Configuración']?.includes('VER') ||
-              req.user.permissions?.['Usuarios']?.includes('VER')
+              req.user.permissions?.['Usuarios']?.includes('VER') ||
+              req.user.permissions?.['Tickets']?.includes('VER') ||
+              req.user.permissions?.['Tickets']?.includes('EDITAR')
             );
             if (hasReadPerm) return next();
           }
@@ -357,7 +375,7 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
         `;
       case 'usuarios':
         return `
-          SELECT u.*,
+          SELECT u.id, u.nombre_completo, u.email, u.telefono, u.url_avatar, u.esta_activo, u.debe_cambiar_password, u.creado_en,
             (SELECT COALESCE(json_agg(ru.*), '[]'::json) FROM (
               SELECT ru_inner.usuario_id, ru_inner.rol_id, ru_inner.asignado_en,
                      (SELECT row_to_json(r.*) FROM (SELECT id, nombre, descripcion, esta_activo FROM public.roles WHERE id = ru_inner.rol_id) r) AS roles
@@ -365,6 +383,14 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
             ) ru) AS roles_usuario
           FROM public.usuarios u
         `;
+      case 'roles_usuario':
+        return `
+          SELECT ru.*,
+            (SELECT row_to_json(r.*) FROM (SELECT id, nombre, descripcion, esta_activo FROM public.roles WHERE id = ru.rol_id) r) AS roles
+          FROM public.roles_usuario ru
+        `;
+      case 'roles':
+        return `SELECT r.* FROM public.roles r`;
       default:
         return `SELECT tbl.* FROM public."${table}" tbl`;
     }
@@ -481,16 +507,40 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
         return processed;
       });
 
+      const onConflictParam = req.query.on_conflict || req.query.onConflict;
       const allResults = [];
       for (const row of rows) {
         const keys = Object.keys(row).filter((k) => /^[a-z_][a-z0-9_]*$/.test(k));
         if (keys.length === 0) continue;
 
         const columns = keys.map((k) => `"${k}"`).join(', ');
-        const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
-        const values = keys.map((k) => row[k]);
+        const placeholders = keys.map((k, i) => {
+          if (table === 'politicas_asignacion_tickets' && (k === 'roles_ids' || k === 'usuarios_ids')) {
+            return `$${i + 1}::jsonb`;
+          }
+          return `$${i + 1}`;
+        }).join(', ');
 
-        const sql = `INSERT INTO public."${table}" (${columns}) VALUES (${placeholders}) RETURNING *`;
+        const values = keys.map((k) => {
+          const val = row[k];
+          if (val !== null && typeof val === 'object') {
+            return JSON.stringify(val);
+          }
+          return val;
+        });
+
+        let conflictClause = '';
+        if (onConflictParam && /^[a-z_][a-z0-9_]*$/.test(onConflictParam)) {
+          const updateCols = keys.filter((k) => k !== onConflictParam && k !== 'id');
+          if (updateCols.length > 0) {
+            const setStatements = updateCols.map((k) => `"${k}" = EXCLUDED."${k}"`).join(', ');
+            conflictClause = ` ON CONFLICT ("${onConflictParam}") DO UPDATE SET ${setStatements}`;
+          } else {
+            conflictClause = ` ON CONFLICT ("${onConflictParam}") DO NOTHING`;
+          }
+        }
+
+        const sql = `INSERT INTO public."${table}" (${columns}) VALUES (${placeholders})${conflictClause} RETURNING *`;
         const { rows: inserted } = await dbQuery(sql, values);
         allResults.push(...inserted);
       }
@@ -527,8 +577,16 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
       const setClauses = [];
       const values = [];
       for (const key of updateKeys) {
-        values.push(body[key]);
-        setClauses.push(`"${key}" = $${values.length}`);
+        let val = body[key];
+        if (val !== null && typeof val === 'object') {
+          val = JSON.stringify(val);
+        }
+        values.push(val);
+        if (table === 'politicas_asignacion_tickets' && (key === 'roles_ids' || key === 'usuarios_ids')) {
+          setClauses.push(`"${key}" = $${values.length}::jsonb`);
+        } else {
+          setClauses.push(`"${key}" = $${values.length}`);
+        }
       }
 
       const { whereClauses, values: filterValues } = parseFilters(req.query);

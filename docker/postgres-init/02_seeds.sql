@@ -145,30 +145,30 @@ ON CONFLICT (id) DO UPDATE SET
   esta_activo = TRUE,
   debe_cambiar_password = FALSE;
 
--- 8. Asignar rol Administrador Supremo al SuperAdmin
+-- 8. Asignar rol SuperAdmin
 INSERT INTO public.roles_usuario (usuario_id, rol_id, asignado_por, asignado_en)
 SELECT 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', r.id, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', NOW()
 FROM public.roles r
-WHERE r.nombre = 'Administrador Supremo'
+WHERE r.nombre IN ('SuperAdmin', 'Administrador Supremo')
 ON CONFLICT (usuario_id, rol_id) DO NOTHING;
 
--- 9. Asignar todos los permisos del sistema al rol Administrador Supremo
+-- 9. Asignar todos los permisos del sistema al rol SuperAdmin
 INSERT INTO public.permisos_rol (rol_id, permiso_id)
 SELECT r.id, p.id
 FROM public.roles r
 CROSS JOIN public.permisos p
-WHERE r.nombre = 'Administrador Supremo'
+WHERE r.nombre IN ('SuperAdmin', 'Administrador Supremo')
 ON CONFLICT (rol_id, permiso_id) DO NOTHING;
 
 -- 10. Asignar permisos operativos a roles estándar
--- Técnico de Soporte:
+-- Soporte Técnico:
 INSERT INTO public.permisos_rol (rol_id, permiso_id)
 SELECT r.id, p.id
 FROM public.roles r
 CROSS JOIN public.permisos p
 JOIN public.modulos m ON m.id = p.modulo_id
 JOIN public.acciones a ON a.id = p.accion_id
-WHERE r.nombre = 'Técnico de Soporte'
+WHERE r.nombre IN ('Soporte Técnico', 'Técnico de Soporte')
   AND (
     (m.nombre = 'Dashboard')
     OR (m.nombre = 'Tickets' AND a.nombre IN ('VER', 'CREAR', 'EDITAR', 'LLAMAR'))
@@ -204,7 +204,7 @@ FROM public.roles r
 CROSS JOIN public.permisos p
 JOIN public.modulos m ON m.id = p.modulo_id
 JOIN public.acciones a ON a.id = p.accion_id
-WHERE LOWER(r.nombre) IN ('it', 'técnico it')
+WHERE UPPER(TRIM(r.nombre)) = 'IT'
   AND (
     (m.nombre = 'Dashboard')
     OR (m.nombre = 'Cola IT' AND a.nombre IN ('VER', 'CREAR', 'EDITAR'))
@@ -214,3 +214,36 @@ WHERE LOWER(r.nombre) IN ('it', 'técnico it')
     OR (m.nombre = 'Tareas' AND a.nombre IN ('VER', 'CREAR', 'EDITAR'))
   )
 ON CONFLICT (rol_id, permiso_id) DO NOTHING;
+
+-- 11. Políticas Iniciales de Asignación y Atención de Tickets
+INSERT INTO public.politicas_asignacion_tickets (tipo, nombre, descripcion, roles_ids, usuarios_ids)
+VALUES
+  (
+    'autoasignar',
+    'Auto-asignación de Tickets',
+    'Roles y usuarios con permiso para asignarse tickets a sí mismos (botón ASIGNARME).',
+    (SELECT COALESCE(jsonb_agg(id::text), '[]'::jsonb) FROM public.roles WHERE nombre IN ('Soporte Técnico', 'IT', 'Admin', 'SuperAdmin')),
+    '[]'::jsonb
+  ),
+  (
+    'asignar_otros',
+    'Asignación a Terceros',
+    'Roles y usuarios con permiso para asignar o reasignar tickets a otros técnicos (menú ASIG / RE-ASIG).',
+    (SELECT COALESCE(jsonb_agg(id::text), '[]'::jsonb) FROM public.roles WHERE nombre IN ('Admin', 'SuperAdmin')),
+    '[]'::jsonb
+  ),
+  (
+    'atender_soporte',
+    'Atención en Cola de Soporte',
+    'Roles y usuarios habilitados para atender y recibir tickets de la cola general de Soporte Técnico.',
+    (SELECT COALESCE(jsonb_agg(id::text), '[]'::jsonb) FROM public.roles WHERE nombre IN ('Soporte Técnico', 'Admin', 'SuperAdmin')),
+    '[]'::jsonb
+  ),
+  (
+    'atender_it',
+    'Atención en Cola IT (Escalados)',
+    'Roles y usuarios habilitados para atender y recibir tickets escalados a IT Especializado.',
+    (SELECT COALESCE(jsonb_agg(id::text), '[]'::jsonb) FROM public.roles WHERE nombre IN ('IT', 'Admin', 'SuperAdmin')),
+    '[]'::jsonb
+  )
+ON CONFLICT (tipo) DO NOTHING;

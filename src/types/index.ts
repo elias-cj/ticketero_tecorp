@@ -234,6 +234,7 @@ export interface User {
   roleName?: string;
   userId?: string;
   activeRoleId?: string;
+  roles?: any[];
   token?: string;
   permissions?: Record<string, string[]>;
 }

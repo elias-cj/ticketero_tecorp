@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { isSuperAdmin as checkSuperAdmin } from "@/lib/isSuperAdmin";
 
 const mainItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, module: "Dashboard" },
@@ -37,7 +38,7 @@ const AppSidebar = () => {
   const permissions = user?.permissions || {};
   
   // SOLAMENTE el Administrador Supremo (Superadmin raíz) tiene bypass total de permisos
-  const isSuperAdmin = userRole === "superadmin" || userRole === "superadm" || roleName === "administrador supremo" || roleName === "supremo";
+  const isSuperAdmin = checkSuperAdmin(userRole, roleName);
 
   const hasPermission = (moduleName: string, action: string = "VER") => {
     // Si es Administrador Supremo raíz, tiene acceso total

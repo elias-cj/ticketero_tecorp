@@ -76,6 +76,7 @@ const Login = () => {
         userId: profile.id,
         roleName: roles[0].nombre,
         activeRoleId: roles[0].id,
+        roles: roles,
         token: profile.token,
         permissions: profile.permissions
       }, roles[0].id);
@@ -97,6 +98,7 @@ const Login = () => {
       userId: pendingProfile.id,
       roleName: role.nombre,
       activeRoleId: role.id,
+      roles: pendingProfile.roles || [],
       token: pendingProfile.token,
       permissions: pendingProfile.permissions
     }, role.id);
@@ -237,8 +239,9 @@ const Login = () => {
 function mapRoleName(name: string): string {
   if (isSuperAdmin(name, name)) return "superadmin";
   const n = name.toLowerCase().trim();
-  if (n === "administrador" || n === "admin") return "admin";
+  if (n === "administrador" || n === "admin" || n === "semiadm") return "admin";
   if (n === "it" || n === "it especializado") return "it";
+  if (n === "soporte técnico" || n === "soporte tecnico" || n === "técnico de soporte" || n === "tecnico de soporte" || n === "soporte") return "soporte";
   if (n === "bi") return "bi";
   return n;
 }

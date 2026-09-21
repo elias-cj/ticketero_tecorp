@@ -58,6 +58,23 @@ export const TicketListView = () => {
   } = useTicketActions();
   const { status: realtimeStatus } = useTicketRealtime();
   const { solutions, useTechniciansByQueue } = useTicketMetadata();
+
+  const permissions = user?.permissions || {};
+  const userRole = (user?.role || "soporte").toLowerCase();
+  const isSuperAdmin =
+    userRole === "superadmin" ||
+    userRole === "administrador supremo" ||
+    userRole === "superadm";
+
+  const hasPermission = (moduleName: string, action: string = "VER") => {
+    if (isSuperAdmin) return true;
+    return permissions[moduleName]?.includes(action);
+  };
+
+  const showITQueue = hasPermission("Cola IT", "VER");
+  const canAssign = hasPermission("Tickets", "EDITAR");
+  const effectiveQueue = showITQueue ? queueView : "soporte";
+
   // user.role es el nombre del rol activo del usuario
   const currentUserRoleNames: string[] = [];
   if (user?.role) currentUserRoleNames.push(user.role);
@@ -65,7 +82,7 @@ export const TicketListView = () => {
 
   const currentUserId = user?.userId || user?.id;
   const { data: technicians = [] } = useTechniciansByQueue(
-    queueView,
+    effectiveQueue,
     currentUserId,
     currentUserRoleNames
   );
@@ -92,22 +109,6 @@ export const TicketListView = () => {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
-
-  const permissions = user?.permissions || {};
-  const userRole = (user?.role || "soporte").toLowerCase();
-  const isSuperAdmin =
-    userRole === "superadmin" ||
-    userRole === "administrador supremo" ||
-    userRole === "superadm";
-
-  const hasPermission = (moduleName: string, action: string = "VER") => {
-    if (isSuperAdmin) return true;
-    return permissions[moduleName]?.includes(action);
-  };
-
-  const showITQueue = hasPermission("Cola IT", "VER");
-  const canAssign = hasPermission("Tickets", "EDITAR");
-  const effectiveQueue = showITQueue ? queueView : "soporte";
 
   const handleConfirmClose = async () => {
     if (!ticketToClose || !selectedSolutionId) return;

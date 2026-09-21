@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Users, Shield, Building2, Search, Plus, Edit2, Trash2, CheckCircle2, Database, ArrowLeft, Save, AlertCircle } from "lucide-react";
+import { Users, Shield, Building2, Search, Plus, Edit2, Trash2, CheckCircle2, Database, ArrowLeft, Save, AlertCircle, SlidersHorizontal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,11 +14,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { isSuperAdmin as checkSuperAdmin } from "@/lib/isSuperAdmin";
+import { TicketAssignmentSettings } from "@/features/configuration/components/TicketAssignmentSettings";
 
 // Configuration sections
 const TABS = [
   { id: "usuarios", label: "Usuarios", icon: Users },
   { id: "roles", label: "Roles y Permisos", icon: Shield },
+  { id: "atencion_tickets", label: "Atención de Tickets", icon: SlidersHorizontal },
   { id: "empresa", label: "Empresa", icon: Building2 },
   { id: "auditoria", label: "Auditoría", icon: Database },
 ];
@@ -1057,6 +1059,11 @@ export default function Configuration() {
             </Card>
           </motion.div>
         </div>
+      )}
+
+      {/* 5. TAB ATENCION DE TICKETS */}
+      {activeTab === "atencion_tickets" && (
+        <TicketAssignmentSettings />
       )}
 
       {/* MODAL USER / EDIT SYSTEM */}

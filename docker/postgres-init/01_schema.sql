@@ -331,12 +331,12 @@ CREATE FUNCTION public.sembrar_matriz_rbac_inicial() RETURNS void
         ON CONFLICT (modulo_id, accion_id) DO NOTHING;
 
         INSERT INTO public.roles (nombre, descripcion) VALUES
-          ('Administrador Supremo', 'Control total sobre todo el sistema'),
+          ('SuperAdmin', 'Control total sobre todo el sistema (SuperAdmin)'),
+          ('Admin', 'Administrador de operaciones y asignación'),
           ('BI', 'Rol orientado a inteligencia de negocios y análisis'),
-          ('it', 'Técnico de Infraestructura y Redes'),
-          ('Técnico de Soporte', 'Gestión operativa de tickets y soporte técnico'),
-          ('Usuario Autorizado', 'Rol con permisos limitados de consulta'),
-          ('semiadm', 'Rol administrativo parcial')
+          ('IT', 'Especialista de infraestructura, redes y tickets escalados'),
+          ('Soporte Técnico', 'Gestión y resolución operativa de tickets estándar'),
+          ('Usuario Autorizado', 'Rol con permisos limitados de consulta')
         ON CONFLICT (nombre) DO NOTHING;
       END;
       $$;
@@ -572,6 +572,22 @@ CREATE TABLE public.permisos_rol (
     rol_id uuid NOT NULL,
     permiso_id uuid NOT NULL,
     asignado_en timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- TOC entry 248 (class 1259 OID 27100)
+-- Name: politicas_asignacion_tickets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.politicas_asignacion_tickets (
+    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    tipo text NOT NULL UNIQUE,
+    nombre text NOT NULL,
+    descripcion text,
+    roles_ids jsonb DEFAULT '[]'::jsonb,
+    usuarios_ids jsonb DEFAULT '[]'::jsonb,
+    actualizado_en timestamp with time zone DEFAULT now()
 );
 
 

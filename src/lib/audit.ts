@@ -27,3 +27,35 @@ export const logAction = async (
     console.error('Audit service error:', e);
   }
 };
+
+export const logAuditAction = async (
+  action: string,
+  entity: string,
+  details: any,
+  userId?: string
+) => {
+  try {
+    let resolvedUserId = userId;
+    if (!resolvedUserId) {
+      try {
+        const stored = localStorage.getItem('auth');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          resolvedUserId = parsed.id || parsed.userId;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    await supabase.from('registros_auditoria').insert({
+      usuario_id: resolvedUserId,
+      accion: action,
+      entidad: entity,
+      detalles: typeof details === 'string' ? { message: details } : details,
+      creado_en: new Date().toISOString()
+    });
+  } catch (e) {
+    console.error('Error recording audit action:', e);
+  }
+};
+

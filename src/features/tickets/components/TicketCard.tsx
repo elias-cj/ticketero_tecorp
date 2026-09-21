@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger, PopoverClose } from "@/components/ui/popover";
 import { ExtendedTicket } from "../types";
+import { useUserAssignmentPermissions } from "../hooks/useTicketMetadata";
 
 interface TicketCardProps {
   t: ExtendedTicket;
@@ -42,19 +43,7 @@ export const TicketCard = ({
   if (userRole) userRolesList.push(userRole);
   if (roleName) userRolesList.push(roleName);
 
-  const isSuperAdmin = userRolesList.some((r) =>
-    r.includes("superadmin") || r.includes("superadm") || r.includes("supremo")
-  );
-
-  // ¿Tiene rol de IT o Admin que le permita asignar a OTROS técnicos?
-  const canAssignToOthers =
-    isSuperAdmin ||
-    userRolesList.some((r) =>
-      r.includes("admin") || r.includes("semiadm") || r.includes("it") || r.includes("especializado") || r.includes("infraestructura")
-    );
-
-  // Si es únicamente Técnico de Soporte (sin permisos de IT ni Admin)
-  const isOnlySoporte = !canAssignToOthers;
+  const { isSuperAdmin, canSelfAssign, canAssignToOthers } = useUserAssignmentPermissions(user);
 
   const permissions = user?.permissions || {};
   const canCall = isSuperAdmin || Boolean(permissions["Tickets"]?.includes("LLAMAR"));
@@ -192,16 +181,7 @@ export const TicketCard = ({
 
         <div className="flex flex-wrap items-center justify-between gap-1 -mt-1">
           {canAssign && t.status === "abierto" && (
-            isOnlySoporte ? (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleAssign(t.id, currentUserId)}
-                className="h-7 px-2.5 text-[9px] font-black border-border bg-muted/50 rounded-lg shadow-sm hover:bg-primary hover:text-white transition-all"
-              >
-                <UserPlus className="h-3 w-3 mr-1" /> ASIGNARME
-              </Button>
-            ) : (
+            canAssignToOthers ? (
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -217,35 +197,39 @@ export const TicketCard = ({
                     <div className="px-2 py-1 mb-1 text-[7px] font-black text-muted-foreground uppercase tracking-widest bg-muted/50 rounded">
                       Técnicos Disponibles ({currentQueue === "it" ? "IT" : "Soporte"})
                     </div>
-                    {technicians.map((tech: any) => (
-                      <PopoverClose key={tech.id} asChild>
-                        <button
-                          onClick={() => handleAssign(t.id, tech.id)}
-                          className="w-full text-left px-2 py-1.5 text-[10px] font-bold rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-between"
-                        >
-                          {tech.full_name} <ChevronRight className="h-3 w-3" />
-                        </button>
-                      </PopoverClose>
-                    ))}
+                    {technicians.length === 0 ? (
+                      <div className="px-2 py-2 text-[9px] text-muted-foreground text-center italic">
+                        No hay técnicos disponibles
+                      </div>
+                    ) : (
+                      technicians.map((tech: any) => (
+                        <PopoverClose key={tech.id} asChild>
+                          <button
+                            onClick={() => handleAssign(t.id, tech.id)}
+                            className="w-full text-left px-2 py-1.5 text-[10px] font-bold rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-between"
+                          >
+                            {tech.full_name} <ChevronRight className="h-3 w-3" />
+                          </button>
+                        </PopoverClose>
+                      ))
+                    )}
                   </div>
                 </PopoverContent>
               </Popover>
-            )
+            ) : canSelfAssign ? (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleAssign(t.id, currentUserId)}
+                className="h-7 px-2.5 text-[9px] font-black border-border bg-muted/50 rounded-lg shadow-sm hover:bg-primary hover:text-white transition-all"
+              >
+                <UserPlus className="h-3 w-3 mr-1" /> ASIGNARME
+              </Button>
+            ) : null
           )}
 
           {(t.status === "en-proceso" || t.status === "escalado") && (
-            isOnlySoporte ? (
-              t.assignedTo !== currentUserId && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleAssign(t.id, currentUserId)}
-                  className="h-7 px-2.5 text-[9px] font-black border-border bg-muted/50 rounded-lg shadow-sm hover:bg-primary hover:text-white transition-all"
-                >
-                  <UserPlus className="h-3 w-3 mr-1" /> ASIGNARME
-                </Button>
-              )
-            ) : (
+            canAssignToOthers ? (
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -261,20 +245,35 @@ export const TicketCard = ({
                     <div className="px-2 py-1 mb-1 text-[7px] font-black text-muted-foreground uppercase tracking-widest bg-muted/50 rounded">
                       Técnicos Disponibles ({currentQueue === "it" ? "IT" : "Soporte"})
                     </div>
-                    {technicians.map((tech: any) => (
-                      <PopoverClose key={tech.id} asChild>
-                        <button
-                          onClick={() => handleAssign(t.id, tech.id)}
-                          className="w-full text-left px-2 py-1.5 text-[10px] font-bold rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-between"
-                        >
-                          {tech.full_name} <ChevronRight className="h-3 w-3" />
-                        </button>
-                      </PopoverClose>
-                    ))}
+                    {technicians.length === 0 ? (
+                      <div className="px-2 py-2 text-[9px] text-muted-foreground text-center italic">
+                        No hay técnicos disponibles
+                      </div>
+                    ) : (
+                      technicians.map((tech: any) => (
+                        <PopoverClose key={tech.id} asChild>
+                          <button
+                            onClick={() => handleAssign(t.id, tech.id)}
+                            className="w-full text-left px-2 py-1.5 text-[10px] font-bold rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors flex items-center justify-between"
+                          >
+                            {tech.full_name} <ChevronRight className="h-3 w-3" />
+                          </button>
+                        </PopoverClose>
+                      ))
+                    )}
                   </div>
                 </PopoverContent>
               </Popover>
-            )
+            ) : (canSelfAssign && t.assignedTo !== currentUserId) ? (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleAssign(t.id, currentUserId)}
+                className="h-7 px-2.5 text-[9px] font-black border-border bg-muted/50 rounded-lg shadow-sm hover:bg-primary hover:text-white transition-all"
+              >
+                <UserPlus className="h-3 w-3 mr-1" /> ASIGNARME
+              </Button>
+            ) : null
           )}
 
           {/* Botones de Cierre / Escalado */}
