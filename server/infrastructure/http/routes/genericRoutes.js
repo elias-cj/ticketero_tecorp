@@ -157,18 +157,18 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
   const checkTableAuth = (req, res, next) => {
     const table = req.params.table;
     
-    // Lectura pública para catálogos
+    // 1. Catálogos públicos de lectura: disponibles para todos (anónimos o autenticados)
     if (PUBLIC_TABLES.has(table) && req.method === 'GET') {
-      req.isPublicEndpoint = true;
+      return next();
     }
 
-    // Creación pública permitida exclusivamente para tickets
+    // 2. Creación pública permitida exclusivamente para tickets
     if (table === 'tickets' && req.method === 'POST') {
       req.isPublicEndpoint = true;
     }
 
     return authMiddleware(req, res, () => {
-      // Si fue endpoint público y no hay usuario autenticado (ej. GET catálogo o POST ticket anónimo), continuar
+      // Si fue endpoint público y no hay usuario autenticado (ej. POST ticket anónimo), continuar
       if (req.isPublicEndpoint && !req.user) {
         return next();
       }
@@ -177,6 +177,14 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
       if (req.user) {
         if (req.user.is_super_admin) {
           return next();
+        }
+
+        // Permitir que cualquier usuario autenticado consulte su propio estado_activo en tabla usuarios
+        if (table === 'usuarios' && req.method === 'GET') {
+          const isSelfCheck = req.query.id === `eq.${req.user.id}` || req.query.id === `eq.${req.user.userId}`;
+          if (isSelfCheck) {
+            return next();
+          }
         }
 
         const module = TABLE_MODULE_MAP[table];

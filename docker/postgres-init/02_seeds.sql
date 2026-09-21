@@ -159,3 +159,58 @@ FROM public.roles r
 CROSS JOIN public.permisos p
 WHERE r.nombre = 'Administrador Supremo'
 ON CONFLICT (rol_id, permiso_id) DO NOTHING;
+
+-- 10. Asignar permisos operativos a roles estándar
+-- Técnico de Soporte:
+INSERT INTO public.permisos_rol (rol_id, permiso_id)
+SELECT r.id, p.id
+FROM public.roles r
+CROSS JOIN public.permisos p
+JOIN public.modulos m ON m.id = p.modulo_id
+JOIN public.acciones a ON a.id = p.accion_id
+WHERE r.nombre = 'Técnico de Soporte'
+  AND (
+    (m.nombre = 'Dashboard')
+    OR (m.nombre = 'Tickets' AND a.nombre IN ('VER', 'CREAR', 'EDITAR', 'LLAMAR'))
+    OR (m.nombre = 'Tareas' AND a.nombre IN ('VER', 'CREAR', 'EDITAR'))
+    OR (m.nombre = 'Cola IT' AND a.nombre IN ('VER'))
+    OR (m.nombre = 'Soluciones' AND a.nombre IN ('VER', 'CREAR', 'EDITAR'))
+    OR (m.nombre = 'Horarios' AND a.nombre IN ('VER'))
+    OR (m.nombre = 'Tipos de Problema' AND a.nombre IN ('VER'))
+    OR (m.nombre = 'Call Centers' AND a.nombre IN ('VER'))
+  )
+ON CONFLICT (rol_id, permiso_id) DO NOTHING;
+
+-- BI:
+INSERT INTO public.permisos_rol (rol_id, permiso_id)
+SELECT r.id, p.id
+FROM public.roles r
+CROSS JOIN public.permisos p
+JOIN public.modulos m ON m.id = p.modulo_id
+JOIN public.acciones a ON a.id = p.accion_id
+WHERE r.nombre = 'BI'
+  AND (
+    (m.nombre = 'Dashboard')
+    OR (m.nombre = 'Exportación' AND a.nombre IN ('VER', 'CREAR', 'EDITAR'))
+    OR (m.nombre = 'Tickets' AND a.nombre IN ('VER'))
+    OR (m.nombre = 'Call Centers' AND a.nombre IN ('VER'))
+  )
+ON CONFLICT (rol_id, permiso_id) DO NOTHING;
+
+-- IT:
+INSERT INTO public.permisos_rol (rol_id, permiso_id)
+SELECT r.id, p.id
+FROM public.roles r
+CROSS JOIN public.permisos p
+JOIN public.modulos m ON m.id = p.modulo_id
+JOIN public.acciones a ON a.id = p.accion_id
+WHERE LOWER(r.nombre) IN ('it', 'técnico it')
+  AND (
+    (m.nombre = 'Dashboard')
+    OR (m.nombre = 'Cola IT' AND a.nombre IN ('VER', 'CREAR', 'EDITAR'))
+    OR (m.nombre = 'Inventario' AND a.nombre IN ('VER', 'CREAR', 'EDITAR'))
+    OR (m.nombre = 'Licencias' AND a.nombre IN ('VER', 'CREAR', 'EDITAR'))
+    OR (m.nombre = 'Tickets' AND a.nombre IN ('VER', 'EDITAR'))
+    OR (m.nombre = 'Tareas' AND a.nombre IN ('VER', 'CREAR', 'EDITAR'))
+  )
+ON CONFLICT (rol_id, permiso_id) DO NOTHING;
