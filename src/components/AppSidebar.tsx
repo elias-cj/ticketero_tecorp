@@ -17,12 +17,12 @@ const mainItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, module: "Dashboard" },
   { title: "Terminal de Monitoreo", url: "/tickets", icon: ListTodo, module: "Tickets" },
   { title: "Tareas", url: "/tareas", icon: ClipboardList, module: "Tareas" },
-  { title: "Horarios", url: "/horarios", icon: Calendar, module: "Horarios" },
+  // { title: "Horarios", url: "/horarios", icon: Calendar, module: "Horarios" }, // Temporalmente oculto
   { title: "Call Centers", url: "/call-centers", icon: Building2, module: "Call Centers" },
   { title: "Soluciones", url: "/soluciones", icon: BookOpen, module: "Soluciones" },
   { title: "Tipos de Problema", url: "/tipos-problema", icon: AlertOctagon, module: "Tipos de Problema" },
   { title: "Inventario", url: "/inventario", icon: Notebook, module: "Inventario" },
-  { title: "Licencias", url: "/licencias", icon: Shield, module: "Licencias" },
+  // { title: "Licencias", url: "/licencias", icon: Shield, module: "Licencias" }, // Temporalmente oculto
   { title: "Exportar Datos", url: "/exportar", icon: FileDown, module: "Exportación" },
 ];
 

@@ -343,7 +343,15 @@ export function createGenericRoutes({ authMiddleware, tokenService }) {
             (SELECT row_to_json(u.*) FROM (SELECT nombre_completo, telefono FROM public.usuarios WHERE id = t.solicitante_id) u) AS solicitante,
             (SELECT row_to_json(u2.*) FROM (SELECT nombre_completo, telefono FROM public.usuarios WHERE id = t.tecnico_asignado_id) u2) AS tecnico,
             (SELECT row_to_json(u2.*) FROM (SELECT nombre_completo, telefono FROM public.usuarios WHERE id = t.tecnico_asignado_id) u2) AS tecnico_asignado,
-            (SELECT row_to_json(s.*) FROM (SELECT titulo, descripcion FROM public.soluciones WHERE id = t.solucion_id) s) AS soluciones
+            (SELECT row_to_json(s.*) FROM (SELECT titulo, descripcion FROM public.soluciones WHERE id = t.solucion_id) s) AS soluciones,
+            CASE 
+              WHEN LOWER(COALESCE(t.cantidad_afectados, '')) LIKE '%todo%' OR LOWER(COALESCE(t.cantidad_afectados, '')) LIKE '%servicio%' OR LOWER(COALESCE(t.descripcion, '')) LIKE '%[afectados:%todo%' OR LOWER(COALESCE(t.descripcion, '')) LIKE '%[afectados:%servicio%' THEN 4
+              WHEN COALESCE(NULLIF(regexp_replace(COALESCE(t.cantidad_afectados, ''), '[^0-9]', '', 'g'), '')::int, NULLIF(regexp_replace(COALESCE(substring(t.descripcion from '(?i)\\[afectados:[^\\]]+\\]'), ''), '[^0-9]', '', 'g'), '')::int, 2) > 10 THEN 4
+              WHEN COALESCE(NULLIF(regexp_replace(COALESCE(t.cantidad_afectados, ''), '[^0-9]', '', 'g'), '')::int, NULLIF(regexp_replace(COALESCE(substring(t.descripcion from '(?i)\\[afectados:[^\\]]+\\]'), ''), '[^0-9]', '', 'g'), '')::int, 2) >= 5 THEN 3
+              WHEN COALESCE(NULLIF(regexp_replace(COALESCE(t.cantidad_afectados, ''), '[^0-9]', '', 'g'), '')::int, NULLIF(regexp_replace(COALESCE(substring(t.descripcion from '(?i)\\[afectados:[^\\]]+\\]'), ''), '[^0-9]', '', 'g'), '')::int, 2) >= 2 THEN 2
+              WHEN COALESCE(NULLIF(regexp_replace(COALESCE(t.cantidad_afectados, ''), '[^0-9]', '', 'g'), '')::int, NULLIF(regexp_replace(COALESCE(substring(t.descripcion from '(?i)\\[afectados:[^\\]]+\\]'), ''), '[^0-9]', '', 'g'), '')::int, 2) = 1 THEN 1
+              ELSE 2
+            END AS prioridad_rank
           FROM public.tickets t
         `;
       case 'tipos_problema':

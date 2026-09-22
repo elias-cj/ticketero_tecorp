@@ -17,11 +17,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/lib/queryKeys";
 
 
-import { AnnouncementModal, AnnouncementLeftBanner } from "@/components/AnnouncementModalAndBanner";
-
 const Index = () => {
   const queryClient = useQueryClient();
-  const [showAnnouncementModal, setShowAnnouncementModal] = useState(true);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -47,11 +44,6 @@ const Index = () => {
       <section className="px-3 py-4 sm:px-6 sm:py-8 pb-10">
         <div className="container mx-auto max-w-[1240px]">
           <div className="flex flex-col lg:flex-row gap-5 lg:gap-6 justify-center items-start">
-            {/* Anuncio Importante (Izquierda) */}
-            <div className="w-full lg:w-72 shrink-0">
-              <AnnouncementLeftBanner onReopen={() => setShowAnnouncementModal(true)} />
-            </div>
-
             {/* Ticket Form (Center) */}
             <div className="flex-1 w-full lg:max-w-2xl">
               <FormCard />

@@ -14,10 +14,8 @@ import { type CallCenter } from "@/types";
 import { toast } from "sonner";
 import { useSystem } from "@/contexts/SystemContext";
 import { TICKET_STATUSES } from "@/lib/constants";
-import { AnnouncementModal, AnnouncementLeftBanner } from "@/components/AnnouncementModalAndBanner";
 
 const CreateTicket = () => {
-  const [showAnnouncementModal, setShowAnnouncementModal] = useState(true);
   const [submitted, setSubmitted] = useState(false);
   const [ticketNumber, setTicketNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -249,16 +247,10 @@ const CreateTicket = () => {
           <ArrowLeft className="h-4 w-4" /> Volver
         </Link>
 
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Anuncio Importante (Izquierda) */}
-          <div className="w-full lg:w-80 shrink-0">
-            <AnnouncementLeftBanner onReopen={() => setShowAnnouncementModal(true)} />
-          </div>
-
-          <div className="flex-1 w-full">
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
-              <h2 className="text-2xl font-bold text-foreground mb-1">Crear Ticket de Soporte</h2>
-              <p className="text-muted-foreground mb-8">Completa todos los campos para registrar tu solicitud.</p>
+        <div className="max-w-3xl mx-auto">
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
+            <h2 className="text-2xl font-bold text-foreground mb-1">Crear Ticket de Soporte</h2>
+            <p className="text-muted-foreground mb-8">Completa todos los campos para registrar tu solicitud.</p>
 
           {isLoading ? (
             <div className="py-20 text-center bg-card rounded-xl border border-dashed border-border/50">
@@ -453,7 +445,6 @@ const CreateTicket = () => {
       </div>
     </div>
   </div>
-</div>
   );
 };
 

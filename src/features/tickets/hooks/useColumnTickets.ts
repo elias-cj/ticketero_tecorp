@@ -85,9 +85,6 @@ export const useColumnTickets = (
 
       if (statusIds.length === 0) return [];
 
-      const orderByField = statusKey === "cerrado" ? "numero_ticket" : "creado_en";
-      const orderAsc = statusKey !== "cerrado";
-
       const ticketFields = `
         id, numero_ticket, titulo, descripcion,
         estado_id, solicitante_id,
@@ -119,12 +116,21 @@ export const useColumnTickets = (
         query = query.textSearch('vector_busqueda', searchTerm);
       }
 
+      if (statusKey === "cerrado") {
+        query = query
+          .order("fecha_cierre", { ascending: false, nullsFirst: false })
+          .order("creado_en", { ascending: false });
+      } else {
+        // Orden por nivel de criticidad (URGENTE primero) y luego por fecha más antigua primero (ayer antes que hoy)
+        query = query
+          .order("prioridad_rank", { ascending: false })
+          .order("creado_en", { ascending: true });
+      }
+
       const from = (page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      const { data, error } = await query
-        .order(orderByField, { ascending: orderAsc })
-        .range(from, to);
+      const { data, error } = await query.range(from, to);
 
       if (error) throw error;
       return (data || []) as any[];
@@ -147,17 +153,17 @@ export const useColumnTickets = (
     };
 
     const getPriorityRank = (t: ExtendedTicket): number => {
-      const desc = (t.description || t.descripcion || "").toLowerCase();
-      let scopeVal = "";
-      if (desc.includes("[afectados:")) {
+      let scopeVal = String(t.cantidad_afectados || t.affectedScope || "").trim();
+      if (!scopeVal) {
+        const desc = (t.description || t.descripcion || "").toLowerCase();
         const match = desc.match(/\[afectados:\s*([^\]]+)\]/i);
         if (match && match[1]) {
           scopeVal = match[1].trim();
         }
       }
 
-      if (scopeVal.includes("todo") || scopeVal.includes("servicio")) return 4; // URGENTE
-      const num = parseInt(scopeVal, 10);
+      if (scopeVal.toLowerCase().includes("todo") || scopeVal.toLowerCase().includes("servicio")) return 4; // URGENTE
+      const num = parseInt(scopeVal.replace(/\D/g, ""), 10);
       if (!isNaN(num)) {
         if (num > 10) return 4; // URGENTE
         if (num >= 5 && num <= 10) return 3; // ALTO
@@ -223,14 +229,23 @@ export const useColumnTickets = (
       } as ExtendedTicket;
     });
 
-    if (statusKey === "abierto" || statusKey === "escalado") {
+    if (statusKey === "abierto" || statusKey === "escalado" || statusKey === "en-proceso") {
       return mapped.sort((a, b) => {
         const rankA = getPriorityRank(a);
         const rankB = getPriorityRank(b);
         if (rankB !== rankA) {
           return rankB - rankA; // Del más alto (4 = URGENTE) al más bajo (1 = BAJO)
         }
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        // Para el mismo nivel de criticidad: el más antiguo primero (ayer antes que hoy)
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
+    }
+
+    if (statusKey === "cerrado") {
+      return mapped.sort((a, b) => {
+        const dateA = new Date(a.fechaCierre || a.updatedAt || a.createdAt).getTime();
+        const dateB = new Date(b.fechaCierre || b.updatedAt || b.createdAt).getTime();
+        return dateB - dateA;
       });
     }
 
